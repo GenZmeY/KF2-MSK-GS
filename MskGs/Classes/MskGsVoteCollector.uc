@@ -1,6 +1,6 @@
 class MskGsVoteCollector extends KFVoteCollector;
 
-var private const array<string> ImportantPersonList;
+var public array<UniqueNetId> ImportantPersonList;
 var private array<KFPlayerController> PunishList;
 
 function ServerStartPunishment()
@@ -36,15 +36,15 @@ function bool ImportantKickee(PlayerReplicationInfo PRI_Kickee, PlayerReplicatio
 {
 	local string PunishMessage;
 	local KFPlayerController KFPC_Kicker;
-	
-	if (ImportantPersonList.Find(class'OnlineSubsystem'.Static.UniqueNetIdToString(PRI_Kickee.UniqueId)) != -1)
+
+	if (ImportantPersonList.Find('Uid', PRI_Kickee.UniqueId.Uid) != -1)
 	{
 		KFPC_Kicker = KFPlayerController(PRI_Kicker.Owner);
 		if (PunishList.Find(KFPC_Kicker) == -1)
 		{
-			PunishMessage = PRI_Kicker.PlayerName@"tried to kick"@PRI_Kickee.PlayerName@", but sat down on the bottle instead (^_^)";
+			PunishMessage = PRI_Kicker.PlayerName@"tried to kick"@PRI_Kickee.PlayerName@", but sat down on the bottle instead.";
 			WorldInfo.Game.Broadcast(KFPC_Kicker, PunishMessage);
-			
+
 			PunishList.AddItem(KFPC_Kicker);
 			SetTimer(2.0f, false, 'ServerStartPunishment', self);
 		}
@@ -235,7 +235,4 @@ function int GetNextMap()
 
 DefaultProperties
 {
-	ImportantPersonList.Add("0x0110000103143A23") // Spazm*
-	ImportantPersonList.Add("0x011000010276FBCB") // GenZmeY
-	ImportantPersonList.Add("0x011000010F661D88") // Janis
 }
