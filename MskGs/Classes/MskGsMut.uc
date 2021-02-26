@@ -6,6 +6,23 @@ var const int UniqueIDLen;
 
 var config array<string> ImportantPersonList;
 
+function InitMutator(string Options, out string ErrorMessage)
+{
+	local int MaxPlayers, MaxPlayersAllowed;
+
+	super.InitMutator(Options, ErrorMessage);
+
+	if (MyKFGI == none)
+	{
+		return;
+	}
+	
+	MaxPlayers = Clamp(MyKFGI.GetIntOption(Options, "MaxPlayers", MaxPlayers), 1, 128);
+	MaxPlayersAllowed = MaxPlayers;
+	MyKFGI.MaxPlayers = MaxPlayers;
+	MyKFGI.MaxPlayersAllowed = MaxPlayersAllowed;
+}
+
 simulated event PostBeginPlay()
 {
     super.PostBeginPlay();
