@@ -17,7 +17,7 @@ function InitMutator(string Options, out string ErrorMessage)
 		return;
 	}
 	
-	MaxPlayers = Clamp(MyKFGI.GetIntOption(Options, "MaxPlayers", MaxPlayers), 1, 128);
+	MaxPlayers = Clamp(MyKFGI.GetIntOption(Options, "MaxPlayers", MaxPlayers), 6, 128);
 	MaxPlayersAllowed = MaxPlayers;
 	MyKFGI.MaxPlayers = MaxPlayers;
 	MyKFGI.MaxPlayersAllowed = MaxPlayersAllowed;
