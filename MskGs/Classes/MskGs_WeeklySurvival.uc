@@ -104,6 +104,21 @@ function UpdateGameSettings()
 	}
 }
 
+function EndOfMatch(bool bVictory)
+{
+    local KFPlayerController KFPC;
+
+    super.EndOfMatch(bVictory);
+
+    if (bVictory)
+    {
+        foreach WorldInfo.AllControllers(class'KFPlayerController', KFPC)
+		{
+			KFPC.ClientCompletedWeeklySurvival();
+		}
+    }
+}
+
 defaultproperties
 {
 	bIsCustomGame=False
