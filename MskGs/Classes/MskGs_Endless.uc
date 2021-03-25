@@ -1,14 +1,5 @@
 class MskGs_Endless extends KFGameInfo_Endless;
 
-function WaveEnded(EWaveEndCondition WinCondition)
-{
-	// fix bugs after tripware
-	if(!bWaveStarted && !MyKFGRI.bTraderIsOpen)
-		return;
-
-	Super.WaveEnded(WinCondition);
-}
-
 function UpdateGameSettings()
 {
 	local name SessionName;
