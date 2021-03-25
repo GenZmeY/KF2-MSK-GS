@@ -1,5 +1,10 @@
 class MskGs_WeeklySurvival extends KFGameInfo_WeeklySurvival;
 
+simulated function ExileServerUsingKickBan()
+{
+	return;
+}
+
 function UpdateGameSettings()
 {
 	local name SessionName;

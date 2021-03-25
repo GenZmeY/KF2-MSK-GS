@@ -1,5 +1,10 @@
 class MskGs_Objective extends KFGameInfo_Objective;
 
+simulated function ExileServerUsingKickBan()
+{
+	return;
+}
+
 function UpdateGameSettings()
 {
 	local name SessionName;

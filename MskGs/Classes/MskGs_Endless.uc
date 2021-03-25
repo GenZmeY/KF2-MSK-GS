@@ -1,5 +1,10 @@
 class MskGs_Endless extends KFGameInfo_Endless;
 
+simulated function ExileServerUsingKickBan()
+{
+	return;
+}
+
 function UpdateGameSettings()
 {
 	local name SessionName;
@@ -63,6 +68,7 @@ function UpdateGameSettings()
 				KFGameSettings.bCustom = False;
 				KFGameSettings.bUsesStats = !IsUnrankedGame();
 				KFGameSettings.NumSpectators = NumSpectators;
+				KFGameSettings.bServerExiled = false;
 				if(MyKFGRI != none)
 				{
 					MyKFGRI.bCustom = False;

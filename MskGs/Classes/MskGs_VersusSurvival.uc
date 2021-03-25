@@ -1,5 +1,10 @@
 class MskGs_VersusSurvival extends KFGameInfo_VersusSurvival;
 
+simulated function ExileServerUsingKickBan()
+{
+	return;
+}
+
 function UpdateGameSettings()
 {
 	local name SessionName;
