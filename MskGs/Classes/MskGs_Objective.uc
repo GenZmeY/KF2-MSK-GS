@@ -74,7 +74,9 @@ function UpdateGameSettings()
 				{
 					KFGameSettings.MapName = WorldInfo.GetMapName(true);
 					foreach WorldInfo.AllControllers(class'PlayerController', PC)
-						if (PC.bIsPlayer)
+						if (PC.bIsPlayer
+						&& PC.PlayerReplicationInfo != none
+						&& !PC.PlayerReplicationInfo.bOnlySpectator)
 							NumHumanPlayers++;
 					KFGameSettings.NumOpenPublicConnections = KFGameSettings.NumPublicConnections - NumHumanPlayers;
 				}

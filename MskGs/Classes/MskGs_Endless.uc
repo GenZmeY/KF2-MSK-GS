@@ -1,5 +1,14 @@
 class MskGs_Endless extends KFGameInfo_Endless;
 
+function WaveEnded(EWaveEndCondition WinCondition)
+{
+	// fix bugs after tripware
+	if(!bWaveStarted && !MyKFGRI.bTraderIsOpen)
+		return;
+
+	Super.WaveEnded(WinCondition);
+}
+
 function UpdateGameSettings()
 {
 	local name SessionName;
@@ -74,7 +83,9 @@ function UpdateGameSettings()
 				{
 					KFGameSettings.MapName = WorldInfo.GetMapName(true);
 					foreach WorldInfo.AllControllers(class'PlayerController', PC)
-						if (PC.bIsPlayer)
+						if (PC.bIsPlayer
+						&& PC.PlayerReplicationInfo != none
+						&& !PC.PlayerReplicationInfo.bOnlySpectator)
 							NumHumanPlayers++;
 					KFGameSettings.NumOpenPublicConnections = KFGameSettings.NumPublicConnections - NumHumanPlayers;
 				}
