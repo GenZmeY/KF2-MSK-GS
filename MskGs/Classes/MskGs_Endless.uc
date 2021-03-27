@@ -111,6 +111,30 @@ function UpdateGameSettings()
 		}
 	}
 }
+	
+function WaveEnded(EWaveEndCondition WinCondition)
+{
+	if(!bWaveStarted && !MyKFGRI.bTraderIsOpen)
+		return;
+
+	WaveMax = WaveNum + 2;
+	MyKFGRI.WaveMax = WaveMax;
+
+	if(KFGameReplicationInfo_Endless(GameReplicationInfo).CurrentWeeklyMode != INDEX_NONE)
+	{
+		EndOutbreakRound();
+	}
+	bUseSpecialWave = false;
+
+	KFGameReplicationInfo_Endless(GameReplicationInfo).CurrentWeeklyMode = INDEX_NONE;
+	KFGameReplicationInfo_Endless(GameReplicationInfo).CurrentSpecialMode = INDEX_NONE;
+
+	HellOnEarthPlusRoundIncrement();
+
+	Super(KFGameInfo_Survival).WaveEnded(WinCondition);
+
+	TrySetNextWaveSpecial();
+}
 
 defaultproperties
 {
