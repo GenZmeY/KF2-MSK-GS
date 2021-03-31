@@ -93,6 +93,31 @@ function AddMutator(Mutator Mut)
 		Super.AddMutator(Mut);
 }
 
+function bool CheckRelevance(Actor Other)
+{
+	local bool SuperRelevant;
+	local KFDroppedPickup PlayerWeap;
+
+	SuperRelevant = super.CheckRelevance(Other);
+
+	// if this actor is going to be destroyed, return now
+	if (!SuperRelevant)
+	{
+		return SuperRelevant;
+	}
+
+	PlayerWeap = KFDroppedPickup(Other);
+
+	// otherwise modify weapon lifespan
+	if (PlayerWeap != None)
+	{
+		PlayerWeap.Lifespan = 2147483647;
+		return SuperRelevant;
+	}
+
+	return SuperRelevant;
+}
+
 defaultproperties
 {
 	SteamIDLen=17
