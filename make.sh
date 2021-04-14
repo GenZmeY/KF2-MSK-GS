@@ -150,6 +150,7 @@ function upload ()
 	generate_wsinfo "$PackageDir"
 	CMD //C "$(unixpath2win "$KFWorkshop")" "$MutWsInfoName"
 	rm -rf "$PackageDir"
+	rm -rf "$MutPublish"
 	rm -f "$MutWsInfo"
 }
 

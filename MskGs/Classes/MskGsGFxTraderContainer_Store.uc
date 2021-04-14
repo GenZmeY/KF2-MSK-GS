@@ -22,8 +22,8 @@ function bool IsItemFiltered(STraderItem Item, optional bool bDebug)
 		return true;
 	if (!KFPC.GetPurchaseHelper().IsSellable(Item))
 		return true;
-	if (!GroupMember && Item.WeaponDef.default.SharedUnlockId != SCU_None && !class'KFUnlockManager'.static.IsSharedContentUnlocked(Item.WeaponDef.default.SharedUnlockId))
-		return true;
+	//if (!GroupMember && Item.WeaponDef.default.SharedUnlockId != SCU_None && !class'KFUnlockManager'.static.IsSharedContentUnlocked(Item.WeaponDef.default.SharedUnlockId))
+	//	return true;
 	if (Item.WeaponDef.default.PlatformRestriction != PR_All && class'KFUnlockManager'.static.IsPlatformRestricted(Item.WeaponDef.default.PlatformRestriction))
 		return true;
 
