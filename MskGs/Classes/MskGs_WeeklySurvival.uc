@@ -129,4 +129,5 @@ function EndOfMatch(bool bVictory)
 defaultproperties
 {
 	bIsCustomGame=False
+	bForceMapSorting=False
 }
