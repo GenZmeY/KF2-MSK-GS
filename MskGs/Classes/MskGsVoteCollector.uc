@@ -8,57 +8,114 @@ var bool bRandomizeNextMap;
 
 var private array<string> ActiveMapCycle;
 
-var public array<UniqueNetId> ImportantPersonList;
-var private array<KFPlayerController> PunishList;
+var public array<UniqueNetId> KickProtectedList;
 
-function ServerStartPunishment()
+var private array<KFPlayerController> KickWarningList;
+var private array<KFPlayerController> KickPunishList;
+
+function NotifyLogout(Controller Exiting)
+{
+	KickWarningList.RemoveItem(KFPlayerController(Exiting));
+	KickPunishList.RemoveItem(KFPlayerController(Exiting));
+}
+
+function PunishmentTick()
 {
 	local KFGameReplicationInfo KFGRI;
 	local KFGameInfo KFGI;
 	local KFPlayerController KFPC;
-	local int i;
+	local KFInventoryManager KFIM;
+	local array<KFPlayerController> LocalKickPunishList;
 	
-	if (PunishList.Length == 0)
+	if (KickPunishList.Length == 0)
+	{
+		ClearTimer(nameof(PunishmentTick));
 		return;
+	}
 	
 	KFGRI = KFGameReplicationInfo(WorldInfo.GRI);
 	KFGI = KFGameInfo(WorldInfo.Game);
 	
-	for (i=0; i < PunishList.Length; i++)
+	LocalKickPunishList = KickPunishList;
+	foreach LocalKickPunishList(KFPC)
 	{
-		KFPC = PunishList[i];
 		if (KFGRI.bMatchHasBegun)
 		{
-			KFPC.Suicide();
+			if (KFPC.Pawn.Health <= 1)
+			{
+				KFPC.Suicide();
+				KickPunishList.RemoveItem(KFPC);
+				KickWarningList.RemoveItem(KFPC);
+			}
+			else
+			{
+				KFPC.Pawn.Health--;
+				
+				if (KFPawn_Human(KFPC.Pawn).Armor > 0)
+					KFPawn_Human(KFPC.Pawn).Armor--;
+				
+				if (KFPC.Pawn.InvManager != None)
+				{
+					KFIM = KFInventoryManager(KFPC.Pawn.InvManager);
+					if (KFIM != None)
+					{
+						KFIM.ThrowMoney();
+					}
+				}
+			}
 		}
 		else if (KFGI.AccessControl != none)
 		{
+			KickPunishList.RemoveItem(KFPC);
+			KickWarningList.RemoveItem(KFPC);
 			KFAccessControl(KFGI.AccessControl).ForceKickPlayer(KFPC, KFGI.AccessControl.KickedMsg);
 			KFGI.BroadcastLocalized(KFGI, class'KFLocalMessage', LMT_KickVoteSucceeded, CurrentKickVote.PlayerPRI);
 		}
 	}
-	PunishList.Length = 0;
 }
 
-function bool ImportantKickee(PlayerReplicationInfo PRI_Kickee, PlayerReplicationInfo PRI_Kicker)
+function bool IsPlayerKickProtected(PlayerReplicationInfo PRI_Kickee)
 {
-	local string PunishMessage;
+	return (KickProtectedList.Find('Uid', PRI_Kickee.UniqueId.Uid) != -1);
+}
+
+function bool IsKickerWarned(KFPlayerController KFPC)
+{
+	return (KickWarningList.Find(KFPC) != -1);
+}
+
+function bool IsKickerPunishListed(KFPlayerController KFPC)
+{
+	return (KickPunishList.Find(KFPC) != -1);
+}
+
+function WarnKicker(PlayerReplicationInfo PRI_Kickee, PlayerReplicationInfo PRI_Kicker)
+{	
+	local KFPlayerController KFPC_Kicker;
+	
+	KFPC_Kicker = KFPlayerController(PRI_Kicker.Owner);
+	if (!IsKickerWarned(KFPC_Kicker))
+	{
+		KickWarningList.AddItem(KFPC_Kicker);
+		WorldInfo.Game.Broadcast(KFPC_Kicker, PRI_Kicker.PlayerName@"tried to kick"@PRI_Kickee.PlayerName);
+		WorldInfo.Game.Broadcast(KFPC_Kicker, "If he tries to do it again, the hand of God will punish him");
+	}
+}
+
+function PunishKicker(PlayerReplicationInfo PRI_Kicker)
+{
 	local KFPlayerController KFPC_Kicker;
 
-	if (ImportantPersonList.Find('Uid', PRI_Kickee.UniqueId.Uid) != -1)
+	KFPC_Kicker = KFPlayerController(PRI_Kicker.Owner);
+	if (!IsKickerPunishListed(KFPC_Kicker))
 	{
-		KFPC_Kicker = KFPlayerController(PRI_Kicker.Owner);
-		if (PunishList.Find(KFPC_Kicker) == -1)
+		KickPunishList.AddItem(KFPC_Kicker);
+		WorldInfo.Game.Broadcast(KFPC_Kicker, PRI_Kicker.PlayerName@"seems to be feeling bad...");
+		if (!IsTimerActive(nameof(PunishmentTick)))
 		{
-			PunishMessage = PRI_Kicker.PlayerName@"tried to kick"@PRI_Kickee.PlayerName@", but sat down on the bottle instead.";
-			WorldInfo.Game.Broadcast(KFPC_Kicker, PunishMessage);
-
-			PunishList.AddItem(KFPC_Kicker);
-			SetTimer(2.0f, false, 'ServerStartPunishment', self);
+			SetTimer(0.5f, true, nameof(PunishmentTick), self);
 		}
-		return true;
 	}
-	return false;
 }
 
 function ServerStartVoteKick(PlayerReplicationInfo PRI_Kickee, PlayerReplicationInfo PRI_Kicker)
@@ -71,66 +128,66 @@ function ServerStartVoteKick(PlayerReplicationInfo PRI_Kickee, PlayerReplication
 	KFGI = KFGameInfo(WorldInfo.Game);
 	KFPC = KFPlayerController(PRI_Kicker.Owner);
 	KickeePC = KFPlayerController(PRI_Kickee.Owner);
-
-	// Kick voting is disabled
-	if(KFGI.bDisableKickVote)
+	
+	if (KFGI.bDisableKickVote) // Kick voting is disabled
 	{
 		KFPC.ReceiveLocalizedMessage(class'KFLocalMessage', LMT_KickVoteDisabled);
 		return;
 	}
 
-	// Spectators aren't allowed to vote
-	if(PRI_Kicker.bOnlySpectator)
+	if (PRI_Kicker.bOnlySpectator) // Spectators aren't allowed to vote
 	{
 		KFPC.ReceiveLocalizedMessage(class'KFLocalMessage', LMT_KickVoteNoSpectators);
 		return;
 	}
 
-	// Not enough players to start a vote
-	if( KFGI.NumPlayers <= 2 )
+	if (KFGI.NumPlayers <= 2) // Not enough players to start a vote
 	{
 		KFPC.ReceiveLocalizedMessage(class'KFLocalMessage', LMT_KickVoteNotEnoughPlayers);
 		return;
 	}
 
-	// Maximum number of players kicked per match has been reached
-	if( KickedPlayers >= 2 )
+	if (KickedPlayers >= 2) // Maximum number of players kicked per match has been reached
 	{
 		KFPC.ReceiveLocalizedMessage(class'KFLocalMessage', LMT_KickVoteMaxKicksReached);
 		return;
 	}
 
-	// Bottling
-	if (ImportantKickee(PRI_Kickee, PRI_Kicker))
+	if (IsPlayerKickProtected(PRI_Kickee)) // Bottling
 	{
+		if (IsKickerWarned(KFPC))
+		{
+			PunishKicker(PRI_Kicker);
+		}
+		else
+		{
+			WarnKicker(PRI_Kickee, PRI_Kicker);
+		}
 		return;
 	}
 
-	// Can't kick admins
-	if(KFGI.AccessControl != none)
+	if (KFGI.AccessControl != none) // Can't kick admins
 	{
-		if(KFGI.AccessControl.IsAdmin(KickeePC))
+		if (KFGI.AccessControl.IsAdmin(KickeePC))
 		{
 			KFPC.ReceiveLocalizedMessage(class'KFLocalMessage', LMT_KickVoteAdmin);
 			return;
 		}
 	}
 
-	// Last vote failed, must wait until failed vote cooldown before starting a new vote
-	if( bIsFailedVoteTimerActive )
+	if (bIsFailedVoteTimerActive) // Last vote failed, must wait until failed vote cooldown before starting a new vote
 	{
 		KFPC.ReceiveLocalizedMessage(class'KFLocalMessage', LMT_KickVoteRejected);
 		return;
 	}
 
-	// A kick vote is not allowed while another vote is active
-	if(bIsSkipTraderVoteInProgress)
+	if (bIsSkipTraderVoteInProgress) // A kick vote is not allowed while another vote is active
 	{
 		KFPC.ReceiveLocalizedMessage(class'KFLocalMessage', LMT_OtherVoteInProgress);
 		return;
 	}
 
-	if( !bIsKickVoteInProgress )
+	if (!bIsKickVoteInProgress)
 	{
 		// Clear voter array
 		PlayersThatHaveVoted.Length = 0;
@@ -149,11 +206,11 @@ function ServerStartVoteKick(PlayerReplicationInfo PRI_Kickee, PlayerReplication
 		}
 		KFGI.BroadcastLocalized(KFGI, class'KFLocalMessage', LMT_KickVoteStarted, CurrentKickVote.PlayerPRI);
 		WorldInfo.Game.Broadcast(KFPC, PRI_Kicker.PlayerName@"starts voting for kick"@PRI_Kickee.PlayerName);
-		SetTimer( VoteTime, false, nameof(ConcludeVoteKick), self );
+		SetTimer(VoteTime, false, nameof(ConcludeVoteKick), self );
 		// Cast initial vote
 		RecieveVoteKick(PRI_Kicker, true);
 	}
-	else if(PRI_Kickee == CurrentKickVote.PlayerPRI)
+	else if (PRI_Kickee == CurrentKickVote.PlayerPRI)
 	{
 		RecieveVoteKick(PRI_Kicker, false);
 	}

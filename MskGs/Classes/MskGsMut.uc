@@ -1,10 +1,7 @@
 Class MskGsMut extends KFMutator
 	config(MskGs);
 
-var const int SteamIDLen;
-var const int UniqueIDLen;
-
-var const int CurrentVersion;
+const CurrentVersion = 2;
 var config int ConfigVersion;
 
 var config bool bEnableMapStats;
@@ -13,7 +10,7 @@ var config bool bOfficialNextMapOnly;
 var config bool bRandomizeNextMap;
 var config int WeapDespawnTime;
 
-var config array<string> ImportantPersonList;
+var config array<string> KickProtectedList;
 var config array<int> PerPlayerMaxMonsters;
 
 function InitMutator(string Options, out string ErrorMessage)
@@ -62,7 +59,7 @@ function InitConfig()
 			`log("[MskGsMut] Config is up-to-date");
 			break;
 		default:
-			`log("[MskGsMut] Warn: The config version is higher than the current version (are you using an old mutator?)");
+			`log("[MskGsMut] Warn: The config version is higher than the current version");
 			`log("[MskGsMut] Warn: Config version is"@ConfigVersion@"but current version is"@CurrentVersion);
 			`log("[MskGsMut] Warn: The config version will be changed to "@CurrentVersion);
 			break;
@@ -125,17 +122,17 @@ function Initialize()
 	
 	steamworks = class'GameEngine'.static.GetOnlineSubsystem();
 	
-	foreach ImportantPersonList(Person)
+	foreach KickProtectedList(Person)
 	{
-		if (Len(Person) == UniqueIDLen && steamworks.StringToUniqueNetId(Person, PersonUID))
+		if (IsUID(Person) && steamworks.StringToUniqueNetId(Person, PersonUID))
 		{
-			if (VoteCollector.ImportantPersonList.Find('Uid', PersonUID.Uid) == -1)
-				VoteCollector.ImportantPersonList.AddItem(PersonUID);
+			if (VoteCollector.KickProtectedList.Find('Uid', PersonUID.Uid) == -1)
+				VoteCollector.KickProtectedList.AddItem(PersonUID);
 		}
-		else if (Len(Person) == SteamIDLen && steamworks.Int64ToUniqueNetId(Person, PersonUID))
+		else if (steamworks.Int64ToUniqueNetId(Person, PersonUID))
 		{
-			if (VoteCollector.ImportantPersonList.Find('Uid', PersonUID.Uid) == -1)
-				VoteCollector.ImportantPersonList.AddItem(PersonUID);
+			if (VoteCollector.KickProtectedList.Find('Uid', PersonUID.Uid) == -1)
+				VoteCollector.KickProtectedList.AddItem(PersonUID);
 		}
 		else `Log("[MskGsMut] WARN: Can't add person:"@Person);
 	}
@@ -168,6 +165,11 @@ function AddMutator(Mutator Mut)
 		Mut.Destroy();
 	else
 		Super.AddMutator(Mut);
+}
+
+private function bool IsUID(String ID)
+{
+	return (Left(ID, 2) ~= "0x");
 }
 
 function bool CheckRelevance(Actor Other)
@@ -210,9 +212,23 @@ function bool PreventDeath(Pawn Killed, Controller Killer, class<DamageType> dam
 	return Super.PreventDeath(Killed, Killer, damageType, HitLocation);
 }
 
+function NotifyLogin(Controller NewPlayer)
+{
+    super.NotifyLogin(NewPlayer);
+}
+
+function NotifyLogout(Controller Exiting)
+{
+	local MskGsVoteCollector VoteCollector;
+	
+	VoteCollector = MskGsVoteCollector(MyKFGI.MyKFGRI.VoteCollector);
+	
+    VoteCollector.NotifyLogout(Exiting);
+
+    super.NotifyLogout(Exiting);
+}
+
 defaultproperties
 {
-	SteamIDLen=17
-	UniqueIDLen=18
-	CurrentVersion=2 // Config
+	
 }
