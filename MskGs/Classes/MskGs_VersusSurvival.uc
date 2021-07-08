@@ -114,5 +114,4 @@ function UpdateGameSettings()
 defaultproperties
 {
 	bIsCustomGame=False
-	bForceMapSorting=False
 }

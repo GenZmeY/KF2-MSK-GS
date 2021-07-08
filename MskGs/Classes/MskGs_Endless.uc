@@ -139,5 +139,4 @@ function WaveEnded(EWaveEndCondition WinCondition)
 defaultproperties
 {
 	bIsCustomGame=False
-	bForceMapSorting=False
 }
