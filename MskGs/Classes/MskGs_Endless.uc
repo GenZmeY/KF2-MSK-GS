@@ -82,7 +82,7 @@ function UpdateGameSettings()
 					foreach WorldInfo.AllControllers(class'PlayerController', PC)
 						if (PC.bIsPlayer
 						&& PC.PlayerReplicationInfo != none
-						&& !PC.PlayerReplicationInfo.bOnlySpectator)
+						&& !PC.PlayerReplicationInfo.bBot)
 							NumHumanPlayers++;
 					KFGameSettings.NumOpenPublicConnections = KFGameSettings.NumPublicConnections - NumHumanPlayers;
 				}

@@ -81,11 +81,12 @@ function UpdateGameSettings()
 					foreach WorldInfo.AllControllers(class'PlayerController', PC)
 						if (PC.bIsPlayer
 						&& PC.PlayerReplicationInfo != none
-						&& !PC.PlayerReplicationInfo.bOnlySpectator)
+						&& !PC.PlayerReplicationInfo.bBot)
 							NumHumanPlayers++;
+
 					KFGameSettings.NumOpenPublicConnections = KFGameSettings.NumPublicConnections - NumHumanPlayers;
 				}
-
+				
 				//`REMOVEMESOON_ServerTakeoverLog("KFGameInfo_Survival.UpdateGameSettings 4 - PlayfabInter: "$PlayfabInter);
 				if (PlayfabInter != none)
 				{
