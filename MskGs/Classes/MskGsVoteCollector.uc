@@ -97,8 +97,7 @@ function WarnKicker(PlayerReplicationInfo PRI_Kickee, PlayerReplicationInfo PRI_
 	if (!IsKickerWarned(KFPC_Kicker))
 	{
 		KickWarningList.AddItem(KFPC_Kicker);
-		WorldInfo.Game.Broadcast(KFPC_Kicker, PRI_Kicker.PlayerName@"tried to kick"@PRI_Kickee.PlayerName);
-		WorldInfo.Game.Broadcast(KFPC_Kicker, "If he tries to do it again, the hand of God will punish him");
+		WorldInfo.Game.Broadcast(KFPC_Kicker, PRI_Kicker.PlayerName@"tried to kick"@PRI_Kickee.PlayerName$". If he tries to do it again, the hand of God will punish him");
 	}
 }
 
