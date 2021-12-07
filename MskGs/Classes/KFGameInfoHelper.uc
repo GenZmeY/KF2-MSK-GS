@@ -90,8 +90,41 @@ static function UpdateGameSettings(KFGameInfo_Survival KFGI, bool bUsesStats, st
 
 static function class<KFPawn_Monster> PickProxyZed(class<KFPawn_Monster> MonsterClass, Controller Killer)
 {
-	`log(">>>>>>>>>>>>> DBG: monsterclass"@MonsterClass);
-	return MonsterClass;
+	local class<KFPawn_Monster> ProxyClass;
+	
+	ProxyClass = MonsterClass;
+	
+	switch (MonsterClass)
+	{
+		case class'KFPawn_ZedBloat':                    ProxyClass = class'KFPawnProxy_ZedBloat';                    break;
+		case class'KFPawn_ZedBloatKing':                ProxyClass = class'KFPawnProxy_ZedBloatKing';                break;
+		case class'KFPawn_ZedBloatKing_SantasWorkshop': ProxyClass = class'KFPawnProxy_ZedBloatKing_SantasWorkshop'; break;
+		case class'KFPawn_ZedBloatKingSubspawn':        ProxyClass = class'KFPawnProxy_ZedBloatKingSubspawn';        break;
+		case class'KFPawn_ZedClot_Alpha':               ProxyClass = class'KFPawnProxy_ZedClot_Alpha';               break;
+		case class'KFPawn_ZedClot_AlphaKing':           ProxyClass = class'KFPawnProxy_ZedClot_AlphaKing';           break;
+		case class'KFPawn_ZedClot_Cyst':                ProxyClass = class'KFPawnProxy_ZedClot_Cyst';                break;
+		case class'KFPawn_ZedClot_Slasher':             ProxyClass = class'KFPawnProxy_ZedClot_Slasher';             break;
+		case class'KFPawn_ZedCrawler':                  ProxyClass = class'KFPawnProxy_ZedCrawler';                  break;
+		case class'KFPawn_ZedCrawlerKing':              ProxyClass = class'KFPawnProxy_ZedCrawlerKing';              break;
+		case class'KFPawn_ZedDAR':                      ProxyClass = class'KFPawnProxy_ZedDAR';                      break;
+		case class'KFPawn_ZedDAR_EMP':                  ProxyClass = class'KFPawnProxy_ZedDAR_EMP';                  break;
+		case class'KFPawn_ZedDAR_Laser':                ProxyClass = class'KFPawnProxy_ZedDAR_Laser';                break;
+		case class'KFPawn_ZedDAR_Rocket':               ProxyClass = class'KFPawnProxy_ZedDAR_Rocket';               break;
+		case class'KFPawn_ZedFleshpound':               ProxyClass = class'KFPawnProxy_ZedFleshpound';               break;
+		case class'KFPawn_ZedFleshpoundKing':           ProxyClass = class'KFPawnProxy_ZedFleshpoundKing';           break;
+		case class'KFPawn_ZedFleshpoundMini':           ProxyClass = class'KFPawnProxy_ZedFleshpoundMini';           break;
+		case class'KFPawn_ZedGorefast':                 ProxyClass = class'KFPawnProxy_ZedGorefast';                 break;
+		case class'KFPawn_ZedGorefastDualBlade':        ProxyClass = class'KFPawnProxy_ZedGorefastDualBlade';        break;
+		case class'KFPawn_ZedHans':                     ProxyClass = class'KFPawnProxy_ZedHans';                     break;
+		case class'KFPawn_ZedHusk':                     ProxyClass = class'KFPawnProxy_ZedHusk';                     break;
+		case class'KFPawn_ZedMatriarch':                ProxyClass = class'KFPawnProxy_ZedMatriarch';                break;
+		case class'KFPawn_ZedPatriarch':                ProxyClass = class'KFPawnProxy_ZedPatriarch';                break;
+		case class'KFPawn_ZedScrake':                   ProxyClass = class'KFPawnProxy_ZedScrake';                   break;
+		case class'KFPawn_ZedSiren':                    ProxyClass = class'KFPawnProxy_ZedSiren';                    break;
+		case class'KFPawn_ZedStalker':                  ProxyClass = class'KFPawnProxy_ZedStalker';                  break;
+	}
+
+	return ProxyClass;
 }
 
 defaultproperties
