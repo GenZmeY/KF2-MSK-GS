@@ -1,7 +1,7 @@
 Class MskGsMut extends KFMutator
 	config(MskGs);
 
-const CurrentVersion = 2;
+const CurrentVersion = 3;
 var config int ConfigVersion;
 
 var config bool bEnableMapStats;
@@ -9,6 +9,7 @@ var config string SortStats;
 var config bool bOfficialNextMapOnly;
 var config bool bRandomizeNextMap;
 var config int WeapDespawnTime;
+var config int DoshDespawnTime;
 
 var config array<string> KickProtectedList;
 var config array<int> PerPlayerMaxMonsters;
@@ -51,6 +52,11 @@ function InitConfig()
 				PerPlayerMaxMonsters.AddItem(32);
 				PerPlayerMaxMonsters.AddItem(34);
 				PerPlayerMaxMonsters.AddItem(36);
+			}
+		case 2:
+			if (DoshDespawnTime == 0)
+			{
+				DoshDespawnTime = 60 * 5;
 			}
 		case 2147483647:
 			`log("[MskGsMut] Config updated to version"@CurrentVersion);
@@ -175,7 +181,7 @@ private function bool IsUID(String ID)
 function bool CheckRelevance(Actor Other)
 {
 	local bool SuperRelevant;
-	local KFDroppedPickup PlayerWeap;
+	local KFDroppedPickup DroppedPickup;
 
 	SuperRelevant = super.CheckRelevance(Other);
 
@@ -185,13 +191,15 @@ function bool CheckRelevance(Actor Other)
 		return SuperRelevant;
 	}
 
-	PlayerWeap = KFDroppedPickup(Other);
+	DroppedPickup = KFDroppedPickup(Other);
 
 	// otherwise modify weapon lifespan
-	if (PlayerWeap != None)
+	if (DroppedPickup != None)
 	{
-		PlayerWeap.Lifespan = WeapDespawnTime;
-		return SuperRelevant;
+		if (KFDroppedPickup_Cash(DroppedPickup) != None)
+			DroppedPickup.Lifespan = DoshDespawnTime;
+		else
+			DroppedPickup.Lifespan = WeapDespawnTime;
 	}
 
 	return SuperRelevant;

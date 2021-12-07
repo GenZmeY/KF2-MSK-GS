@@ -1,7 +1,7 @@
 class MskGsGFxTraderContainer_Store extends KFGFxTraderContainer_Store;
 
+/*
 var bool GroupMember;
-
 function Initialize(KFGFxObject_Menu NewParentMenu)
 {
 	local OnlineSubsystemSteamworks OnlineSub;
@@ -13,6 +13,7 @@ function Initialize(KFGFxObject_Menu NewParentMenu)
 	class'OnlineSubsystem'.Static.StringToUniqueNetId("0x017000000223386E", GroupID);
 	GroupMember = OnlineSub.CheckPlayerGroup(GroupID);
 }
+*/
 
 function bool IsItemFiltered(STraderItem Item, optional bool bDebug)
 {
@@ -32,4 +33,5 @@ function bool IsItemFiltered(STraderItem Item, optional bool bDebug)
 
 defaultproperties
 {
+	
 }
