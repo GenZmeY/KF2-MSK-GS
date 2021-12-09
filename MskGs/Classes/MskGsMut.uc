@@ -8,8 +8,8 @@ var config bool bEnableMapStats;
 var config string SortStats;
 var config bool bOfficialNextMapOnly;
 var config bool bRandomizeNextMap;
-var config int WeapDespawnTime;
-var config int DoshDespawnTime;
+var config int WeapLifespan;
+var config int DoshLifespan;
 
 var config array<string> KickProtectedList;
 var config array<int> PerPlayerMaxMonsters;
@@ -44,7 +44,7 @@ function InitConfig()
 			SortStats = "CounterDesc";
 			bOfficialNextMapOnly = True;
 			bRandomizeNextMap = True;
-			WeapDespawnTime = 2147483647;
+			WeapLifespan = 60 * 60;
 		case 1:
 			if (PerPlayerMaxMonsters.Length != 6)
 			{
@@ -57,9 +57,9 @@ function InitConfig()
 				PerPlayerMaxMonsters.AddItem(36);
 			}
 		case 2:
-			if (DoshDespawnTime == 0)
+			if (DoshLifespan == 0)
 			{
-				DoshDespawnTime = 60 * 5;
+				DoshLifespan = 60 * 5;
 			}
 		case 2147483647:
 			`log("[MskGsMut] Config updated to version"@CurrentVersion);
@@ -206,9 +206,9 @@ function bool CheckRelevance(Actor Other)
 	if (DroppedPickup != None)
 	{
 		if (KFDroppedPickup_Cash(DroppedPickup) != None)
-			DroppedPickup.Lifespan = DoshDespawnTime;
+			DroppedPickup.Lifespan = DoshLifespan;
 		else
-			DroppedPickup.Lifespan = WeapDespawnTime;
+			DroppedPickup.Lifespan = WeapLifespan;
 	}
 
 	return SuperRelevant;
