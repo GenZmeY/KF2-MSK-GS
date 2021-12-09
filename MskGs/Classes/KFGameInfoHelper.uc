@@ -1,6 +1,6 @@
-class KFGameInfoHelper extends object;
+class KFGameInfoHelper extends Object;
 
-static function UpdateGameSettings(KFGameInfo_Survival KFGI, bool bUsesStats, string GameModeClass)
+public static function UpdateGameSettings(KFGameInfo_Survival KFGI, bool bUsesStats, string GameModeClass)
 {
 	local name SessionName;
 	local KFOnlineGameSettings KFGameSettings;
@@ -88,43 +88,47 @@ static function UpdateGameSettings(KFGameInfo_Survival KFGI, bool bUsesStats, st
 	}
 }
 
-static function class<KFPawn_Monster> PickProxyZed(class<KFPawn_Monster> MonsterClass, Controller Killer)
+public static function class<KFPawn_Monster> PickProxyZed(class<KFPawn_Monster> MonsterClass, Controller Killer, MskGsMut Mut)
 {
-	local class<KFPawn_Monster> ProxyClass;
-	
-	ProxyClass = MonsterClass;
+	`log("[MSK-GS] DBG: Length:"@Mut.MskGsMemberList.Length);
+	if (Mut.MskGsMemberList.Find(Killer) == INDEX_NONE)
+	{
+		`log("[MSK-GS] DBG:"@MonsterClass);
+		return MonsterClass;
+	}
 	
 	switch (MonsterClass)
 	{
-		case class'KFPawn_ZedBloat':                    ProxyClass = class'KFPawnProxy_ZedBloat';                    break;
-		case class'KFPawn_ZedBloatKing':                ProxyClass = class'KFPawnProxy_ZedBloatKing';                break;
-		case class'KFPawn_ZedBloatKing_SantasWorkshop': ProxyClass = class'KFPawnProxy_ZedBloatKing_SantasWorkshop'; break;
-		case class'KFPawn_ZedBloatKingSubspawn':        ProxyClass = class'KFPawnProxy_ZedBloatKingSubspawn';        break;
-		case class'KFPawn_ZedClot_Alpha':               ProxyClass = class'KFPawnProxy_ZedClot_Alpha';               break;
-		case class'KFPawn_ZedClot_AlphaKing':           ProxyClass = class'KFPawnProxy_ZedClot_AlphaKing';           break;
-		case class'KFPawn_ZedClot_Cyst':                ProxyClass = class'KFPawnProxy_ZedClot_Cyst';                break;
-		case class'KFPawn_ZedClot_Slasher':             ProxyClass = class'KFPawnProxy_ZedClot_Slasher';             break;
-		case class'KFPawn_ZedCrawler':                  ProxyClass = class'KFPawnProxy_ZedCrawler';                  break;
-		case class'KFPawn_ZedCrawlerKing':              ProxyClass = class'KFPawnProxy_ZedCrawlerKing';              break;
-		case class'KFPawn_ZedDAR':                      ProxyClass = class'KFPawnProxy_ZedDAR';                      break;
-		case class'KFPawn_ZedDAR_EMP':                  ProxyClass = class'KFPawnProxy_ZedDAR_EMP';                  break;
-		case class'KFPawn_ZedDAR_Laser':                ProxyClass = class'KFPawnProxy_ZedDAR_Laser';                break;
-		case class'KFPawn_ZedDAR_Rocket':               ProxyClass = class'KFPawnProxy_ZedDAR_Rocket';               break;
-		case class'KFPawn_ZedFleshpound':               ProxyClass = class'KFPawnProxy_ZedFleshpound';               break;
-		case class'KFPawn_ZedFleshpoundKing':           ProxyClass = class'KFPawnProxy_ZedFleshpoundKing';           break;
-		case class'KFPawn_ZedFleshpoundMini':           ProxyClass = class'KFPawnProxy_ZedFleshpoundMini';           break;
-		case class'KFPawn_ZedGorefast':                 ProxyClass = class'KFPawnProxy_ZedGorefast';                 break;
-		case class'KFPawn_ZedGorefastDualBlade':        ProxyClass = class'KFPawnProxy_ZedGorefastDualBlade';        break;
-		case class'KFPawn_ZedHans':                     ProxyClass = class'KFPawnProxy_ZedHans';                     break;
-		case class'KFPawn_ZedHusk':                     ProxyClass = class'KFPawnProxy_ZedHusk';                     break;
-		case class'KFPawn_ZedMatriarch':                ProxyClass = class'KFPawnProxy_ZedMatriarch';                break;
-		case class'KFPawn_ZedPatriarch':                ProxyClass = class'KFPawnProxy_ZedPatriarch';                break;
-		case class'KFPawn_ZedScrake':                   ProxyClass = class'KFPawnProxy_ZedScrake';                   break;
-		case class'KFPawn_ZedSiren':                    ProxyClass = class'KFPawnProxy_ZedSiren';                    break;
-		case class'KFPawn_ZedStalker':                  ProxyClass = class'KFPawnProxy_ZedStalker';                  break;
+		case class'KFPawn_ZedBloat':                    MonsterClass = class'KFPawnProxy_ZedBloat';                    break;
+		case class'KFPawn_ZedBloatKing':                MonsterClass = class'KFPawnProxy_ZedBloatKing';                break;
+		case class'KFPawn_ZedBloatKing_SantasWorkshop': MonsterClass = class'KFPawnProxy_ZedBloatKing_SantasWorkshop'; break;
+		case class'KFPawn_ZedBloatKingSubspawn':        MonsterClass = class'KFPawnProxy_ZedBloatKingSubspawn';        break;
+		case class'KFPawn_ZedClot_Alpha':               MonsterClass = class'KFPawnProxy_ZedClot_Alpha';               break;
+		case class'KFPawn_ZedClot_AlphaKing':           MonsterClass = class'KFPawnProxy_ZedClot_AlphaKing';           break;
+		case class'KFPawn_ZedClot_Cyst':                MonsterClass = class'KFPawnProxy_ZedClot_Cyst';                break;
+		case class'KFPawn_ZedClot_Slasher':             MonsterClass = class'KFPawnProxy_ZedClot_Slasher';             break;
+		case class'KFPawn_ZedCrawler':                  MonsterClass = class'KFPawnProxy_ZedCrawler';                  break;
+		case class'KFPawn_ZedCrawlerKing':              MonsterClass = class'KFPawnProxy_ZedCrawlerKing';              break;
+		case class'KFPawn_ZedDAR':                      MonsterClass = class'KFPawnProxy_ZedDAR';                      break;
+		case class'KFPawn_ZedDAR_EMP':                  MonsterClass = class'KFPawnProxy_ZedDAR_EMP';                  break;
+		case class'KFPawn_ZedDAR_Laser':                MonsterClass = class'KFPawnProxy_ZedDAR_Laser';                break;
+		case class'KFPawn_ZedDAR_Rocket':               MonsterClass = class'KFPawnProxy_ZedDAR_Rocket';               break;
+		case class'KFPawn_ZedFleshpound':               MonsterClass = class'KFPawnProxy_ZedFleshpound';               break;
+		case class'KFPawn_ZedFleshpoundKing':           MonsterClass = class'KFPawnProxy_ZedFleshpoundKing';           break;
+		case class'KFPawn_ZedFleshpoundMini':           MonsterClass = class'KFPawnProxy_ZedFleshpoundMini';           break;
+		case class'KFPawn_ZedGorefast':                 MonsterClass = class'KFPawnProxy_ZedGorefast';                 break;
+		case class'KFPawn_ZedGorefastDualBlade':        MonsterClass = class'KFPawnProxy_ZedGorefastDualBlade';        break;
+		case class'KFPawn_ZedHans':                     MonsterClass = class'KFPawnProxy_ZedHans';                     break;
+		case class'KFPawn_ZedHusk':                     MonsterClass = class'KFPawnProxy_ZedHusk';                     break;
+		case class'KFPawn_ZedMatriarch':                MonsterClass = class'KFPawnProxy_ZedMatriarch';                break;
+		case class'KFPawn_ZedPatriarch':                MonsterClass = class'KFPawnProxy_ZedPatriarch';                break;
+		case class'KFPawn_ZedScrake':                   MonsterClass = class'KFPawnProxy_ZedScrake';                   break;
+		case class'KFPawn_ZedSiren':                    MonsterClass = class'KFPawnProxy_ZedSiren';                    break;
+		case class'KFPawn_ZedStalker':                  MonsterClass = class'KFPawnProxy_ZedStalker';                  break;
 	}
 
-	return ProxyClass;
+	`log("[MSK-GS] DBG:"@MonsterClass);
+	return MonsterClass;
 }
 
 defaultproperties

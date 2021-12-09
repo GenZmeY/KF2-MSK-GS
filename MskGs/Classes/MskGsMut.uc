@@ -14,6 +14,9 @@ var config int DoshDespawnTime;
 var config array<string> KickProtectedList;
 var config array<int> PerPlayerMaxMonsters;
 
+var array<MskGsRepInfo> RepClients;
+var array<Controller> MskGsMemberList;
+
 function InitMutator(string Options, out string ErrorMessage)
 {
 	local int MaxPlayers, MaxPlayersAllowed;
@@ -126,6 +129,12 @@ function Initialize()
 	VoteCollector.bRandomizeNextMap = bRandomizeNextMap;
 	VoteCollector.SortPolicy = SortStats;
 	
+	if (MskGs_Endless(MyKFGI)        != None) MskGs_Endless(MyKFGI).Mut        = Self;
+	if (MskGs_Objective(MyKFGI)      != None) MskGs_Objective(MyKFGI).Mut      = Self;
+	if (MskGs_Survival(MyKFGI)       != None) MskGs_Survival(MyKFGI).Mut       = Self;
+	if (MskGs_VersusSurvival(MyKFGI) != None) MskGs_VersusSurvival(MyKFGI).Mut = Self;
+	if (MskGs_WeeklySurvival(MyKFGI) != None) MskGs_WeeklySurvival(MyKFGI).Mut = Self;
+	
 	steamworks = class'GameEngine'.static.GetOnlineSubsystem();
 	
 	foreach KickProtectedList(Person)
@@ -220,20 +229,48 @@ function bool PreventDeath(Pawn Killed, Controller Killer, class<DamageType> dam
 	return Super.PreventDeath(Killed, Killer, damageType, HitLocation);
 }
 
-function NotifyLogin(Controller NewPlayer)
+function NotifyLogin(Controller C)
 {
-    super.NotifyLogin(NewPlayer);
+	local MskGsRepInfo RepInfo;
+	
+	if (C == None) return;
+	
+	`log("[MSK-GS] DBG1: NotifyLogin()"@RepInfo@RepInfo.Mut@RepInfo.C);
+	RepInfo = Spawn(class'MskGsRepInfo', KFPlayerController(C));
+	`log("[MSK-GS] DBG2: NotifyLogin()"@RepInfo@RepInfo.Mut@RepInfo.C);
+	RepInfo.C = C;
+	RepInfo.Mut = Self;
+	`log("[MSK-GS] DBG3: NotifyLogin()"@RepInfo@RepInfo.Mut@RepInfo.C);
+	
+	RepClients.AddItem(RepInfo);
+	
+    super.NotifyLogin(C);
 }
 
-function NotifyLogout(Controller Exiting)
+function NotifyLogout(Controller C)
 {
 	local MskGsVoteCollector VoteCollector;
+	local MskGsRepInfo RepInfo;
+	
+	if (C == None) return;
 	
 	VoteCollector = MskGsVoteCollector(MyKFGI.MyKFGRI.VoteCollector);
+    VoteCollector.NotifyLogout(C);
 	
-    VoteCollector.NotifyLogout(Exiting);
-
-    super.NotifyLogout(Exiting);
+	MskGsMemberList.RemoveItem(C);
+	
+	foreach RepClients(RepInfo) // TODO: rework this shit
+	{
+		if (RepInfo.C == C)
+		{
+			`log("[MSK-GS] DBG: Destroy()");
+			RepInfo.Destroy();
+			RepClients.RemoveItem(RepInfo);
+			return;
+		}
+	}
+	
+    super.NotifyLogout(C);
 }
 
 defaultproperties
