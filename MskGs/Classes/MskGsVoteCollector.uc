@@ -180,7 +180,7 @@ function ServerStartVoteKick(PlayerReplicationInfo PRI_Kickee, PlayerReplication
 		return;
 	}
 
-	if (bIsSkipTraderVoteInProgress) // A kick vote is not allowed while another vote is active
+	if (bIsSkipTraderVoteInProgress || bIsPauseGameVoteInProgress) // A kick vote is not allowed while another vote is active
 	{
 		KFPC.ReceiveLocalizedMessage(class'KFLocalMessage', LMT_OtherVoteInProgress);
 		return;
