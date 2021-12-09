@@ -90,12 +90,7 @@ public static function UpdateGameSettings(KFGameInfo_Survival KFGI, bool bUsesSt
 
 public static function class<KFPawn_Monster> PickProxyZed(class<KFPawn_Monster> MonsterClass, Controller Killer, MskGsMut Mut)
 {
-	`log("[MSK-GS] DBG: Length:"@Mut.MskGsMemberList.Length);
-	if (Mut.MskGsMemberList.Find(Killer) == INDEX_NONE)
-	{
-		`log("[MSK-GS] DBG:"@MonsterClass);
-		return MonsterClass;
-	}
+	if (Mut.MskGsMemberList.Find(Killer) == INDEX_NONE) return MonsterClass;
 	
 	switch (MonsterClass)
 	{
@@ -127,7 +122,6 @@ public static function class<KFPawn_Monster> PickProxyZed(class<KFPawn_Monster> 
 		case class'KFPawn_ZedStalker':                  MonsterClass = class'KFPawnProxy_ZedStalker';                  break;
 	}
 
-	`log("[MSK-GS] DBG:"@MonsterClass);
 	return MonsterClass;
 }
 

@@ -2,8 +2,8 @@ class KFPawnProxy_ZedBloat extends KFPawn_ZedBloat;
 
 DefaultProperties
 {
-	XPValues(0)=17 * 1.1f
-	XPValues(1)=22 * 1.1f
-	XPValues(2)=30 * 1.1f
-	XPValues(3)=34 * 1.1f
+	XPValues(0)=19	// 17
+	XPValues(1)=24	// 22
+	XPValues(2)=33	// 30
+	XPValues(3)=37	// 34
 }

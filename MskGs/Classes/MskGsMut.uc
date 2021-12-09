@@ -235,13 +235,9 @@ function NotifyLogin(Controller C)
 	
 	if (C == None) return;
 	
-	`log("[MSK-GS] DBG1: NotifyLogin()"@RepInfo@RepInfo.Mut@RepInfo.C);
 	RepInfo = Spawn(class'MskGsRepInfo', KFPlayerController(C));
-	`log("[MSK-GS] DBG2: NotifyLogin()"@RepInfo@RepInfo.Mut@RepInfo.C);
 	RepInfo.C = C;
 	RepInfo.Mut = Self;
-	`log("[MSK-GS] DBG3: NotifyLogin()"@RepInfo@RepInfo.Mut@RepInfo.C);
-	
 	RepClients.AddItem(RepInfo);
 	
     super.NotifyLogin(C);
@@ -263,7 +259,6 @@ function NotifyLogout(Controller C)
 	{
 		if (RepInfo.C == C)
 		{
-			`log("[MSK-GS] DBG: Destroy()");
 			RepInfo.Destroy();
 			RepClients.RemoveItem(RepInfo);
 			return;

@@ -2,8 +2,8 @@ class KFPawnProxy_ZedFleshpound extends KFPawn_ZedFleshpound;
 
 DefaultProperties
 {
-	XPValues(0)=35 * 1.1f
-	XPValues(1)=47 * 1.1f
-	XPValues(2)=63 * 1.1f
-	XPValues(3)=72 * 1.1f
+	XPValues(0)=39	// 35
+	XPValues(1)=52	// 47
+	XPValues(2)=69	// 63
+	XPValues(3)=79	// 72
 }
