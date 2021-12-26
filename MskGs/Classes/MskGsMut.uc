@@ -14,6 +14,9 @@ var config int DoshLifespan;
 var config array<string> KickProtectedList;
 var config array<int> PerPlayerMaxMonsters;
 
+var array<MskGsRepInfo> RepClients;
+var array<Controller> MskGsMemberList;
+
 function InitMutator(string Options, out string ErrorMessage)
 {
 	local int MaxPlayers, MaxPlayersAllowed;
@@ -126,6 +129,12 @@ function Initialize()
 	VoteCollector.bRandomizeNextMap = bRandomizeNextMap;
 	VoteCollector.SortPolicy = SortStats;
 	
+	if (MskGs_Endless(MyKFGI)        != None) MskGs_Endless(MyKFGI).Mut        = Self;
+	if (MskGs_Objective(MyKFGI)      != None) MskGs_Objective(MyKFGI).Mut      = Self;
+	if (MskGs_Survival(MyKFGI)       != None) MskGs_Survival(MyKFGI).Mut       = Self;
+	if (MskGs_VersusSurvival(MyKFGI) != None) MskGs_VersusSurvival(MyKFGI).Mut = Self;
+	if (MskGs_WeeklySurvival(MyKFGI) != None) MskGs_WeeklySurvival(MyKFGI).Mut = Self;
+	
 	steamworks = class'GameEngine'.static.GetOnlineSubsystem();
 	
 	foreach KickProtectedList(Person)
@@ -218,17 +227,73 @@ function bool PreventDeath(Pawn Killed, Controller Killer, class<DamageType> dam
 	return Super.PreventDeath(Killed, Killer, damageType, HitLocation);
 }
 
+function AddMskGsMember(Controller C)
+{
+	MskGsMemberList.AddItem(C);
+	if (MskGsMemberList.Length >= 10)
+	{
+		if (C.PlayerReplicationInfo != NONE)
+			WorldInfo.Game.Broadcast(C, C.PlayerReplicationInfo.PlayerName@" has joined the game! XP bonus: +50% (MAX!)");
+		else
+			WorldInfo.Game.Broadcast(C, "XP bonus: +50% (MAX!)");
+	}
+	else
+	{
+		if (C.PlayerReplicationInfo != NONE)
+			WorldInfo.Game.Broadcast(C, C.PlayerReplicationInfo.PlayerName@" has joined the game! XP bonus: +"$string(MskGsMemberList.Length * 5)$"% of 50%");
+		else
+			WorldInfo.Game.Broadcast(C, "XP bonus: +"$string(MskGsMemberList.Length * 5)$"% of 50%");
+	}
+}
+
 function NotifyLogin(Controller C)
 {
+	local MskGsRepInfo RepInfo;
+	
+	if (C == None) return;
+	
+	RepInfo = Spawn(class'MskGsRepInfo', KFPlayerController(C));
+	RepInfo.C = C;
+	RepInfo.Mut = Self;
+	RepClients.AddItem(RepInfo);
+	
     super.NotifyLogin(C);
 }
 
 function NotifyLogout(Controller C)
 {
 	local MskGsVoteCollector VoteCollector;
+	local int i;
+	
+	if (C == None) return;
 	
 	VoteCollector = MskGsVoteCollector(MyKFGI.MyKFGRI.VoteCollector);
     VoteCollector.NotifyLogout(C);
+	
+	MskGsMemberList.RemoveItem(C);
+	if (MskGsMemberList.Length >= 10)
+	{
+		if (C.PlayerReplicationInfo != NONE)
+			WorldInfo.Game.Broadcast(C, C.PlayerReplicationInfo.PlayerName@" left the game. XP bonus: +50% (MAX!)");
+		else
+			WorldInfo.Game.Broadcast(C, "XP bonus: +50% (MAX!)");
+	}
+	else
+	{
+		if (C.PlayerReplicationInfo != NONE)
+			WorldInfo.Game.Broadcast(C, C.PlayerReplicationInfo.PlayerName@" left the game. XP bonus: +"$string(MskGsMemberList.Length * 5)$"%");
+		else
+			WorldInfo.Game.Broadcast(C, "XP bonus: +"$string(MskGsMemberList.Length * 5)$"%");
+	}
+
+	for (i = RepClients.Length - 1; i >= 0; i--)
+	{
+		if (RepClients[i].C == C)
+		{
+			RepClients[i].Destroy();
+			RepClients.Remove(i, 1);
+		}
+	}
 	
     super.NotifyLogout(C);
 }
