@@ -190,7 +190,6 @@ private function bool IsUID(String ID)
 function bool CheckRelevance(Actor Other)
 {
 	local bool SuperRelevant;
-	local KFDroppedPickup DroppedPickup;
 
 	SuperRelevant = super.CheckRelevance(Other);
 
@@ -200,15 +199,14 @@ function bool CheckRelevance(Actor Other)
 		return SuperRelevant;
 	}
 
-	DroppedPickup = KFDroppedPickup(Other);
-
-	// otherwise modify weapon lifespan
-	if (DroppedPickup != None)
+	// otherwise modify dosh or weapon lifespan
+	if (KFDroppedPickup_Cash(Other) != None)
 	{
-		if (KFDroppedPickup_Cash(DroppedPickup) != None)
-			DroppedPickup.Lifespan = DoshLifespan;
-		else
-			DroppedPickup.Lifespan = WeapLifespan;
+		if (DoshLifespan != 0) Other.Lifespan = float(DoshLifespan);
+	}
+	else if (KFDroppedPickup(Other) != None)
+	{
+		if (WeapLifespan != 0) Other.Lifespan = float(WeapLifespan);
 	}
 
 	return SuperRelevant;
