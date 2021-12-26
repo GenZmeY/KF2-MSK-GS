@@ -14,9 +14,6 @@ var config int DoshLifespan;
 var config array<string> KickProtectedList;
 var config array<int> PerPlayerMaxMonsters;
 
-var array<MskGsRepInfo> RepClients;
-var array<Controller> MskGsMemberList;
-
 function InitMutator(string Options, out string ErrorMessage)
 {
 	local int MaxPlayers, MaxPlayersAllowed;
@@ -129,12 +126,6 @@ function Initialize()
 	VoteCollector.bRandomizeNextMap = bRandomizeNextMap;
 	VoteCollector.SortPolicy = SortStats;
 	
-	if (MskGs_Endless(MyKFGI)        != None) MskGs_Endless(MyKFGI).Mut        = Self;
-	if (MskGs_Objective(MyKFGI)      != None) MskGs_Objective(MyKFGI).Mut      = Self;
-	if (MskGs_Survival(MyKFGI)       != None) MskGs_Survival(MyKFGI).Mut       = Self;
-	if (MskGs_VersusSurvival(MyKFGI) != None) MskGs_VersusSurvival(MyKFGI).Mut = Self;
-	if (MskGs_WeeklySurvival(MyKFGI) != None) MskGs_WeeklySurvival(MyKFGI).Mut = Self;
-	
 	steamworks = class'GameEngine'.static.GetOnlineSubsystem();
 	
 	foreach KickProtectedList(Person)
@@ -205,9 +196,9 @@ function bool CheckRelevance(Actor Other)
 	// otherwise modify weapon lifespan
 	if (DroppedPickup != None)
 	{
-		if (KFDroppedPickup_Cash(DroppedPickup) != None)
+		if (KFDroppedPickup_Cash(DroppedPickup) != None && DoshLifespan != 0)
 			DroppedPickup.Lifespan = DoshLifespan;
-		else
+		else if (WeapLifespan != 0)
 			DroppedPickup.Lifespan = WeapLifespan;
 	}
 
@@ -231,39 +222,15 @@ function bool PreventDeath(Pawn Killed, Controller Killer, class<DamageType> dam
 
 function NotifyLogin(Controller C)
 {
-	local MskGsRepInfo RepInfo;
-	
-	if (C == None) return;
-	
-	RepInfo = Spawn(class'MskGsRepInfo', KFPlayerController(C));
-	RepInfo.C = C;
-	RepInfo.Mut = Self;
-	RepClients.AddItem(RepInfo);
-	
     super.NotifyLogin(C);
 }
 
 function NotifyLogout(Controller C)
 {
 	local MskGsVoteCollector VoteCollector;
-	local MskGsRepInfo RepInfo;
-	
-	if (C == None) return;
 	
 	VoteCollector = MskGsVoteCollector(MyKFGI.MyKFGRI.VoteCollector);
     VoteCollector.NotifyLogout(C);
-	
-	MskGsMemberList.RemoveItem(C);
-	
-	foreach RepClients(RepInfo) // TODO: rework this shit
-	{
-		if (RepInfo.C == C)
-		{
-			RepInfo.Destroy();
-			RepClients.RemoveItem(RepInfo);
-			return;
-		}
-	}
 	
     super.NotifyLogout(C);
 }

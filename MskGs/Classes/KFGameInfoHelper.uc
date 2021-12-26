@@ -28,7 +28,7 @@ public static function UpdateGameSettings(KFGameInfo_Survival KFGI, bool bUsesSt
 
 			if (KFGameSettings != None)
 			{
-				KFGameSettings.Mode = class'KFGameInfo'.static.GetGameModeNumFromClass(GameModeClass);
+				KFGameSettings.Mode = KFGI.default.GameModes.Find('ClassNameAndPath', GameModeClass);
 				KFGameSettings.Difficulty = KFGI.GameDifficulty;
 
 				if (KFGI.WaveNum == 0)
@@ -88,9 +88,10 @@ public static function UpdateGameSettings(KFGameInfo_Survival KFGI, bool bUsesSt
 	}
 }
 
-public static function class<KFPawn_Monster> PickProxyZed(class<KFPawn_Monster> MonsterClass, Controller Killer, MskGsMut Mut)
+public static function class<KFPawn_Monster> PickProxyZed(class<KFPawn_Monster> MonsterClass, Controller Killer)
 {
-	if (Mut.MskGsMemberList.Find(Killer) == INDEX_NONE) return MonsterClass;
+	return MonsterClass; // tmp
+	//if (Mut.MskGsMemberList.Find(Killer) == INDEX_NONE) return MonsterClass;
 	
 	switch (MonsterClass)
 	{
