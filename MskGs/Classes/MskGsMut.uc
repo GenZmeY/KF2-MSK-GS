@@ -227,6 +227,25 @@ function bool PreventDeath(Pawn Killed, Controller Killer, class<DamageType> dam
 	return Super.PreventDeath(Killed, Killer, damageType, HitLocation);
 }
 
+function AddMskGsMember(Controller C)
+{
+	MskGsMemberList.AddItem(C);
+	if (MskGsMemberList.Length >= 10)
+	{
+		if (C.PlayerReplicationInfo != NONE)
+			WorldInfo.Game.Broadcast(C, C.PlayerReplicationInfo.PlayerName@" has joined the game! XP bonus: +50% (MAX!)");
+		else
+			WorldInfo.Game.Broadcast(C, "XP bonus: +50% (MAX!)");
+	}
+	else
+	{
+		if (C.PlayerReplicationInfo != NONE)
+			WorldInfo.Game.Broadcast(C, C.PlayerReplicationInfo.PlayerName@" has joined the game! XP bonus: +"$string(MskGsMemberList.Length * 5)$"% of 50%");
+		else
+			WorldInfo.Game.Broadcast(C, "XP bonus: +"$string(MskGsMemberList.Length * 5)$"% of 50%");
+	}
+}
+
 function NotifyLogin(Controller C)
 {
 	local MskGsRepInfo RepInfo;
@@ -244,7 +263,7 @@ function NotifyLogin(Controller C)
 function NotifyLogout(Controller C)
 {
 	local MskGsVoteCollector VoteCollector;
-	local MskGsRepInfo RepInfo;
+	local int i;
 	
 	if (C == None) return;
 	
@@ -252,14 +271,27 @@ function NotifyLogout(Controller C)
     VoteCollector.NotifyLogout(C);
 	
 	MskGsMemberList.RemoveItem(C);
-	
-	foreach RepClients(RepInfo) // TODO: rework this shit
+	if (MskGsMemberList.Length >= 10)
 	{
-		if (RepInfo.C == C)
+		if (C.PlayerReplicationInfo != NONE)
+			WorldInfo.Game.Broadcast(C, C.PlayerReplicationInfo.PlayerName@" left the game. XP bonus: +50% (MAX!)");
+		else
+			WorldInfo.Game.Broadcast(C, "XP bonus: +50% (MAX!)");
+	}
+	else
+	{
+		if (C.PlayerReplicationInfo != NONE)
+			WorldInfo.Game.Broadcast(C, C.PlayerReplicationInfo.PlayerName@" left the game. XP bonus: +"$string(MskGsMemberList.Length * 5)$"%");
+		else
+			WorldInfo.Game.Broadcast(C, "XP bonus: +"$string(MskGsMemberList.Length * 5)$"%");
+	}
+
+	for (i = RepClients.Length - 1; i >= 0; i--)
+	{
+		if (RepClients[i].C == C)
 		{
-			RepInfo.Destroy();
-			RepClients.RemoveItem(RepInfo);
-			return;
+			RepClients[i].Destroy();
+			RepClients.Remove(i, 1);
 		}
 	}
 	

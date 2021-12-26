@@ -4,7 +4,6 @@ var const class<KFGameInfoHelper> KFGIH;
 
 var public MskGsMut Mut;
 
-
 simulated function ExileServerUsingKickBan()
 {
 	return;

@@ -1,11 +1,17 @@
 class MskGsRepInfo extends ReplicationInfo;
 
+const GroupUIDStr = "0x017000000223386E";
+const MaxRetries  = 10;
+const TimerDelay  = 1.0f;
+
 // Server vars
 var public MskGsMut Mut;
 var public Controller C;
+var private int ServerApplyMembershipRetries;
 
 // Client vars
 var private OnlineSubsystemSteamworks SW;
+var private int ClientGetOnlineSubsystemRetries;
 
 simulated event PostBeginPlay()
 {
@@ -26,34 +32,37 @@ private reliable client function ClientGetOnlineSubsystem()
 		SW = OnlineSubsystemSteamworks(class'GameEngine'.static.GetOnlineSubsystem());
 	}
 	
-	if (SW == None)
+	if (SW == None && ClientGetOnlineSubsystemRetries < MaxRetries)
 	{
-		SetTimer(0.1f, false, nameof(ClientGetOnlineSubsystem));
+		ClientGetOnlineSubsystemRetries++;
+		SetTimer(TimerDelay, false, nameof(ClientGetOnlineSubsystem));
 	}
 	else
 	{
 		ClearTimer(nameof(ClientGetOnlineSubsystem));
-		ClientGetMembership();
+		if (SW != None) ClientGetMembership();
 	}
 }
 
 private reliable client function ClientGetMembership()
 {
 	local UniqueNetId GroupID;
-	class'OnlineSubsystem'.Static.StringToUniqueNetId("0x017000000223386E", GroupID);
+	class'OnlineSubsystem'.Static.StringToUniqueNetId(GroupUIDStr, GroupID);
 	if (SW.CheckPlayerGroup(GroupID)) ServerApplyMembership();
 }
 
 private simulated reliable server function ServerApplyMembership()
 {
-	if (Mut == None || C == None)
+	if ((Mut == None || C == None) && ServerApplyMembershipRetries < MaxRetries)
 	{
-		SetTimer(1.0f, false, nameof(ServerApplyMembership));
+		ServerApplyMembershipRetries++;
+		SetTimer(TimerDelay, false, nameof(ServerApplyMembership));
 		return;
 	}
 	
 	ClearTimer(nameof(ServerApplyMembership));
-	Mut.MskGsMemberList.AddItem(C);
+	
+	if (Mut != None && C != None) Mut.AddMskGsMember(C);
 }
 
 DefaultProperties
@@ -63,4 +72,7 @@ DefaultProperties
 	Role = ROLE_Authority;
 	RemoteRole = ROLE_SimulatedProxy;
 	bSkipActorPropertyReplication = false;
+	
+	ServerApplyMembershipRetries = 0
+	ClientGetOnlineSubsystemRetries = 0
 }
