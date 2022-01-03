@@ -14,6 +14,8 @@ var config int DoshLifespan;
 var config array<string> KickProtectedList;
 var config array<int> PerPlayerMaxMonsters;
 
+var bool bXpNotifications;
+
 var array<MskGsRepInfo> RepClients;
 var array<Controller> MskGsMemberList;
 
@@ -129,11 +131,31 @@ function Initialize()
 	VoteCollector.bRandomizeNextMap = bRandomizeNextMap;
 	VoteCollector.SortPolicy = SortStats;
 	
-	if (MskGs_Endless(MyKFGI)        != None) MskGs_Endless(MyKFGI).Mut        = Self;
-	if (MskGs_Objective(MyKFGI)      != None) MskGs_Objective(MyKFGI).Mut      = Self;
-	if (MskGs_Survival(MyKFGI)       != None) MskGs_Survival(MyKFGI).Mut       = Self;
-	if (MskGs_VersusSurvival(MyKFGI) != None) MskGs_VersusSurvival(MyKFGI).Mut = Self;
-	if (MskGs_WeeklySurvival(MyKFGI) != None) MskGs_WeeklySurvival(MyKFGI).Mut = Self;
+	if (MskGs_Endless(MyKFGI) != None)
+	{
+		bXpNotifications = true;
+		MskGs_Endless(MyKFGI).Mut = Self;
+	}
+	else if (MskGs_Objective(MyKFGI) != None)
+	{
+		bXpNotifications = (MyKFGI.GameDifficulty != 3);
+		MskGs_Objective(MyKFGI).Mut = Self;
+	}
+	else if (MskGs_Survival(MyKFGI) != None)
+	{
+		bXpNotifications = (MyKFGI.GameDifficulty != 3);
+		MskGs_Survival(MyKFGI).Mut = Self;
+	}
+	else if (MskGs_VersusSurvival(MyKFGI) != None)
+	{
+		bXpNotifications = false;
+		MskGs_VersusSurvival(MyKFGI).Mut = Self;
+	}
+	else if (MskGs_WeeklySurvival(MyKFGI) != None)
+	{
+		bXpNotifications = true;
+		MskGs_WeeklySurvival(MyKFGI).Mut = Self;
+	}
 	
 	steamworks = class'GameEngine'.static.GetOnlineSubsystem();
 	
@@ -230,19 +252,22 @@ function bool PreventDeath(Pawn Killed, Controller Killer, class<DamageType> dam
 function AddMskGsMember(Controller C)
 {
 	MskGsMemberList.AddItem(C);
-	if (MskGsMemberList.Length >= 10)
+	if (bXpNotifications)
 	{
-		if (C.PlayerReplicationInfo != NONE)
-			WorldInfo.Game.Broadcast(C, C.PlayerReplicationInfo.PlayerName@" has joined the game! XP bonus: +50% (MAX!)");
+		if (MskGsMemberList.Length >= 10)
+		{
+			if (C.PlayerReplicationInfo != NONE)
+				WorldInfo.Game.Broadcast(C, C.PlayerReplicationInfo.PlayerName$" gives a boost to this server! XP bonus: +50% (MAX!)");
+			else
+				WorldInfo.Game.Broadcast(C, "XP bonus: +50% (MAX!)");
+		}
 		else
-			WorldInfo.Game.Broadcast(C, "XP bonus: +50% (MAX!)");
-	}
-	else
-	{
-		if (C.PlayerReplicationInfo != NONE)
-			WorldInfo.Game.Broadcast(C, C.PlayerReplicationInfo.PlayerName@" has joined the game! XP bonus: +"$string(MskGsMemberList.Length * 5)$"% of 50%");
-		else
-			WorldInfo.Game.Broadcast(C, "XP bonus: +"$string(MskGsMemberList.Length * 5)$"% of 50%");
+		{
+			if (C.PlayerReplicationInfo != NONE)
+				WorldInfo.Game.Broadcast(C, C.PlayerReplicationInfo.PlayerName$" gives a boost to this server! XP bonus: +"$string(MskGsMemberList.Length * 5)$"%");
+			else
+				WorldInfo.Game.Broadcast(C, "XP bonus: +"$string(MskGsMemberList.Length * 5)$"%");
+		}
 	}
 }
 
@@ -271,19 +296,29 @@ function NotifyLogout(Controller C)
     VoteCollector.NotifyLogout(C);
 	
 	MskGsMemberList.RemoveItem(C);
-	if (MskGsMemberList.Length >= 10)
+	if (bXpNotifications)
 	{
-		if (C.PlayerReplicationInfo != NONE)
-			WorldInfo.Game.Broadcast(C, C.PlayerReplicationInfo.PlayerName@" left the game. XP bonus: +50% (MAX!)");
+		if (MskGsMemberList.Length >= 10)
+		{
+			if (C.PlayerReplicationInfo != NONE)
+				WorldInfo.Game.Broadcast(C, C.PlayerReplicationInfo.PlayerName$" left the game. XP bonus: +50% (MAX!)");
+			else
+				WorldInfo.Game.Broadcast(C, "XP bonus: +50% (MAX!)");
+		}
+		else if (MskGsMemberList.Length > 0)
+		{
+			if (C.PlayerReplicationInfo != NONE)
+				WorldInfo.Game.Broadcast(C, C.PlayerReplicationInfo.PlayerName$" left the game. XP bonus: +"$string(MskGsMemberList.Length * 5)$"%");
+			else
+				WorldInfo.Game.Broadcast(C, "XP bonus: +"$string(MskGsMemberList.Length * 5)$"%");
+		}
 		else
-			WorldInfo.Game.Broadcast(C, "XP bonus: +50% (MAX!)");
-	}
-	else
-	{
-		if (C.PlayerReplicationInfo != NONE)
-			WorldInfo.Game.Broadcast(C, C.PlayerReplicationInfo.PlayerName@" left the game. XP bonus: +"$string(MskGsMemberList.Length * 5)$"%");
-		else
-			WorldInfo.Game.Broadcast(C, "XP bonus: +"$string(MskGsMemberList.Length * 5)$"%");
+		{
+			if (C.PlayerReplicationInfo != NONE)
+				WorldInfo.Game.Broadcast(C, C.PlayerReplicationInfo.PlayerName$" left the game. No XP bonus now.");
+			else
+				WorldInfo.Game.Broadcast(C, "No XP bonus now.");
+		}
 	}
 
 	for (i = RepClients.Length - 1; i >= 0; i--)
