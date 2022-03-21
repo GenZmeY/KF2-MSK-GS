@@ -12,7 +12,7 @@ simulated function ExileServerUsingKickBan()
 
 function UpdateGameSettings()
 {
-	KFGIH.static.UpdateGameSettings(Self, !IsUnrankedGame(), "KFGameContent.KFGameInfo_VersusSurvival");
+	KFGIH.static.UpdateGameSettings(Self, !IsUnrankedGame(), "KFGameContent.KFGameInfo_VersusSurvival", Mut);
 }
 
 protected function DistributeMoneyAndXP(class<KFPawn_Monster> MonsterClass, const out array<DamageInfo> DamageHistory, Controller Killer)

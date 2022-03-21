@@ -1,6 +1,6 @@
 class KFGameInfoHelper extends Object;
 
-public static function UpdateGameSettings(KFGameInfo_Survival KFGI, bool bUsesStats, string GameModeClass)
+public static function UpdateGameSettings(KFGameInfo_Survival KFGI, bool bUsesStats, string GameModeClass, MskGsMut Mut)
 {
 	local name SessionName;
 	local KFOnlineGameSettings KFGameSettings;
@@ -51,7 +51,19 @@ public static function UpdateGameSettings(KFGameInfo_Survival KFGI, bool bUsesSt
 				{
 					KFGameSettings.NumWaves = KFGI.WaveMax - 1;
 				}
-				KFGameSettings.OwningPlayerName = class'GameReplicationInfo'.default.ServerName;
+				
+				if (Mut == NONE || Mut.MskGsMemberList.Length == 0)
+				{
+					KFGameSettings.OwningPlayerName = class'GameReplicationInfo'.default.ServerName;
+				}
+				else if (Mut.MskGsMemberList.Length > 10)
+				{
+					KFGameSettings.OwningPlayerName = class'GameReplicationInfo'.default.ServerName @ "(+50% XP)";
+				}
+				else
+				{
+					KFGameSettings.OwningPlayerName = class'GameReplicationInfo'.default.ServerName @ "(+" $ Mut.MskGsMemberList.Length * 5 $ "% XP)";
+				}
 
 				KFGameSettings.NumPublicConnections = KFGI.MaxPlayersAllowed;
 				KFGameSettings.bRequiresPassword = KFGI.RequiresPassword();

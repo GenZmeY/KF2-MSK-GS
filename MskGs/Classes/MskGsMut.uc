@@ -4,11 +4,7 @@ Class MskGsMut extends KFMutator
 const CurrentVersion = 3;
 var config int ConfigVersion;
 
-var config bool bEnableMapStats;
-var config string SortStats;
-var config bool bOfficialNextMapOnly;
-var config bool bRandomizeNextMap;
-var config int WeapLifespan;
+var config bool bEnableMapStats; var config string SortStats; var config bool bOfficialNextMapOnly; var config bool bRandomizeNextMap; var config int WeapLifespan;
 var config int DoshLifespan;
 
 var config array<string> KickProtectedList;
@@ -22,23 +18,7 @@ var array<MskGsRepInfo> RepClients;
 var array<Controller> MskGsMemberList;
 var array<UniqueNetId> AdminUIDList;
 
-function InitMutator(string Options, out string ErrorMessage)
-{
-	local int MaxPlayers, MaxPlayersAllowed;
-
-	super.InitMutator(Options, ErrorMessage);
-
-	if (MyKFGI == none)
-	{
-		`log("[MskGsMut] Error: can't init, MyKFGI is none");
-		return;
-	}
-	
-	MaxPlayers = Clamp(MyKFGI.GetIntOption(Options, "MaxPlayers", MaxPlayers), 6, 128);
-	MaxPlayersAllowed = MaxPlayers;
-	MyKFGI.MaxPlayers = MaxPlayers;
-	MyKFGI.MaxPlayersAllowed = MaxPlayersAllowed;
-}
+function InitMutator(string Options, out string ErrorMessage) { local int MaxPlayers, MaxPlayersAllowed; super.InitMutator(Options, ErrorMessage); if (MyKFGI == none) { `log("[MskGsMut] Error: can't init, MyKFGI is none"); return; } MaxPlayers = Clamp(MyKFGI.GetIntOption(Options, "MaxPlayers", MaxPlayers), 6, 128); MaxPlayersAllowed = MaxPlayers; MyKFGI.MaxPlayers = MaxPlayers; MyKFGI.MaxPlayersAllowed = MaxPlayersAllowed; }
 
 function InitConfig()
 {
@@ -292,6 +272,7 @@ function AddMskGsMember(Controller C)
 				WorldInfo.Game.Broadcast(C, "XP bonus: +"$string(MskGsMemberList.Length * 5)$"%");
 		}
 	}
+	MyKFGI.UpdateGameSettings();
 }
 
 function NotifyLogin(Controller C)
@@ -350,6 +331,7 @@ function NotifyLogout(Controller C)
 				WorldInfo.Game.Broadcast(C, "No XP bonus now.");
 		}
 	}
+	MyKFGI.UpdateGameSettings();
 
 	for (i = RepClients.Length - 1; i >= 0; i--)
 	{
