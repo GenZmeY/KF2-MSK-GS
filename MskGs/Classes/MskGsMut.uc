@@ -16,6 +16,7 @@ var config array<string> AdminList;
 var config array<int> PerPlayerMaxMonsters;
 
 var bool bXpNotifications;
+var bool bInitialized;
 
 var array<MskGsRepInfo> RepClients;
 var array<Controller> MskGsMemberList;
@@ -29,6 +30,7 @@ function InitMutator(string Options, out string ErrorMessage)
 
 	if (MyKFGI == none)
 	{
+		`log("[MskGsMut] Error: can't init, MyKFGI is none");
 		return;
 	}
 	
@@ -115,11 +117,15 @@ function Initialize()
 	local string Person;
 	local UniqueNetId PersonUID;
 	
+	if (bInitialized) return;
+	
 	if (MyKFGI == None || MyKFGI.MyKFGRI == None)
 	{
 		SetTimer(1.f, false, nameof(Initialize));
 		return;
 	}
+	
+	bInitialized = true;
 
 	InitConfig();
 
@@ -294,6 +300,8 @@ function NotifyLogin(Controller C)
 	
 	if (C == None) return;
 	
+	Initialize();
+	
 	RepInfo = Spawn(class'MskGsRepInfo', KFPlayerController(C));
 	RepInfo.C = C;
 	RepInfo.Mut = Self;
@@ -311,6 +319,8 @@ function NotifyLogout(Controller C)
 	local int i;
 	
 	if (C == None) return;
+	
+	Initialize();
 	
 	VoteCollector = MskGsVoteCollector(MyKFGI.MyKFGRI.VoteCollector);
     VoteCollector.NotifyLogout(C);
@@ -355,5 +365,5 @@ function NotifyLogout(Controller C)
 
 defaultproperties
 {
-	
+	bInitialized=false
 }
