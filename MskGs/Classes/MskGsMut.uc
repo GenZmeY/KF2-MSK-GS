@@ -12,12 +12,14 @@ var config int WeapLifespan;
 var config int DoshLifespan;
 
 var config array<string> KickProtectedList;
+var config array<string> AdminList;
 var config array<int> PerPlayerMaxMonsters;
 
 var bool bXpNotifications;
 
 var array<MskGsRepInfo> RepClients;
 var array<Controller> MskGsMemberList;
+var array<UniqueNetId> AdminUIDList;
 
 function InitMutator(string Options, out string ErrorMessage)
 {
@@ -174,6 +176,21 @@ function Initialize()
 		else `Log("[MskGsMut] WARN: Can't add person:"@Person);
 	}
 	
+	foreach AdminList(Person)
+	{
+		if (IsUID(Person) && steamworks.StringToUniqueNetId(Person, PersonUID))
+		{
+			if (AdminUIDList.Find('Uid', PersonUID.Uid) == -1)
+				AdminUIDList.AddItem(PersonUID);
+		}
+		else if (steamworks.Int64ToUniqueNetId(Person, PersonUID))
+		{
+			if (AdminUIDList.Find('Uid', PersonUID.Uid) == -1)
+				AdminUIDList.AddItem(PersonUID);
+		}
+		else `Log("[MskGsMut] WARN: Can't add admin:"@Person);
+	}
+	
 	ModifySpawnManager();
 
 	`Log("[MskGsMut] Mutator loaded.");
@@ -281,6 +298,9 @@ function NotifyLogin(Controller C)
 	RepInfo.C = C;
 	RepInfo.Mut = Self;
 	RepClients.AddItem(RepInfo);
+	
+	if (AdminUIDList.Find('Uid', C.PlayerReplicationInfo.UniqueId.Uid) != -1)
+		C.PlayerReplicationInfo.bAdmin = true;
 	
     super.NotifyLogin(C);
 }
