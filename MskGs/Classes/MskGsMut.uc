@@ -18,7 +18,23 @@ var array<MskGsRepInfo> RepClients;
 var array<Controller> MskGsMemberList;
 var array<UniqueNetId> AdminUIDList;
 
-function InitMutator(string Options, out string ErrorMessage) { local int MaxPlayers, MaxPlayersAllowed; super.InitMutator(Options, ErrorMessage); if (MyKFGI == none) { `log("[MskGsMut] Error: can't init, MyKFGI is none"); return; } MaxPlayers = Clamp(MyKFGI.GetIntOption(Options, "MaxPlayers", MaxPlayers), 6, 128); MaxPlayersAllowed = MaxPlayers; MyKFGI.MaxPlayers = MaxPlayers; MyKFGI.MaxPlayersAllowed = MaxPlayersAllowed; }
+function InitMutator(string Options, out string ErrorMessage)
+{
+	local int MaxPlayers, MaxPlayersAllowed;
+	
+	super.InitMutator(Options, ErrorMessage);
+	
+	if (MyKFGI == none)
+	{
+		`log("[MskGsMut] Error: can't init, MyKFGI is none");
+		return;
+	}
+	
+	MaxPlayers = Clamp(MyKFGI.GetIntOption(Options, "MaxPlayers", MaxPlayers), 6, 128);
+	MaxPlayersAllowed = MaxPlayers;
+	MyKFGI.MaxPlayers = MaxPlayers;
+	MyKFGI.MaxPlayersAllowed = MaxPlayersAllowed;
+}
 
 function InitConfig()
 {

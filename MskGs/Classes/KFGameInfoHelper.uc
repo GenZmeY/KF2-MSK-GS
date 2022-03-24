@@ -58,11 +58,11 @@ public static function UpdateGameSettings(KFGameInfo_Survival KFGI, bool bUsesSt
 				}
 				else if (Mut.MskGsMemberList.Length > 10)
 				{
-					KFGameSettings.OwningPlayerName = class'GameReplicationInfo'.default.ServerName @ "(+50% XP)";
+					KFGameSettings.OwningPlayerName = class'GameReplicationInfo'.default.ServerName @ "| +50% XP";
 				}
 				else
 				{
-					KFGameSettings.OwningPlayerName = class'GameReplicationInfo'.default.ServerName @ "(+" $ Mut.MskGsMemberList.Length * 5 $ "% XP)";
+					KFGameSettings.OwningPlayerName = class'GameReplicationInfo'.default.ServerName @ "| +" $ Mut.MskGsMemberList.Length * 5 $ "% XP";
 				}
 
 				KFGameSettings.NumPublicConnections = KFGI.MaxPlayersAllowed;
