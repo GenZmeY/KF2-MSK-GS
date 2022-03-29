@@ -322,32 +322,35 @@ function NotifyLogout(Controller C)
 	VoteCollector = MskGsVoteCollector(MyKFGI.MyKFGRI.VoteCollector);
     VoteCollector.NotifyLogout(C);
 	
-	MskGsMemberList.RemoveItem(C);
-	if (bXpNotifications)
+	if (MskGsMemberList.Find(C) != INDEX_NONE)
 	{
-		if (MskGsMemberList.Length >= 10)
+		MskGsMemberList.RemoveItem(C);
+		if (bXpNotifications)
 		{
-			if (C.PlayerReplicationInfo != NONE)
-				WorldInfo.Game.Broadcast(C, C.PlayerReplicationInfo.PlayerName$" left the game. XP bonus: +50% (MAX!)");
+			if (MskGsMemberList.Length >= 10)
+			{
+				if (C.PlayerReplicationInfo != NONE)
+					WorldInfo.Game.Broadcast(C, C.PlayerReplicationInfo.PlayerName$" left the game. XP bonus: +50% (MAX!)");
+				else
+					WorldInfo.Game.Broadcast(C, "XP bonus: +50% (MAX!)");
+			}
+			else if (MskGsMemberList.Length > 0)
+			{
+				if (C.PlayerReplicationInfo != NONE)
+					WorldInfo.Game.Broadcast(C, C.PlayerReplicationInfo.PlayerName$" left the game. XP bonus: +"$string(MskGsMemberList.Length * 5)$"%");
+				else
+					WorldInfo.Game.Broadcast(C, "XP bonus: +"$string(MskGsMemberList.Length * 5)$"%");
+			}
 			else
-				WorldInfo.Game.Broadcast(C, "XP bonus: +50% (MAX!)");
+			{
+				if (C.PlayerReplicationInfo != NONE)
+					WorldInfo.Game.Broadcast(C, C.PlayerReplicationInfo.PlayerName$" left the game. No XP bonus now.");
+				else
+					WorldInfo.Game.Broadcast(C, "No XP bonus now.");
+			}
 		}
-		else if (MskGsMemberList.Length > 0)
-		{
-			if (C.PlayerReplicationInfo != NONE)
-				WorldInfo.Game.Broadcast(C, C.PlayerReplicationInfo.PlayerName$" left the game. XP bonus: +"$string(MskGsMemberList.Length * 5)$"%");
-			else
-				WorldInfo.Game.Broadcast(C, "XP bonus: +"$string(MskGsMemberList.Length * 5)$"%");
-		}
-		else
-		{
-			if (C.PlayerReplicationInfo != NONE)
-				WorldInfo.Game.Broadcast(C, C.PlayerReplicationInfo.PlayerName$" left the game. No XP bonus now.");
-			else
-				WorldInfo.Game.Broadcast(C, "No XP bonus now.");
-		}
+		MyKFGI.UpdateGameSettings();
 	}
-	MyKFGI.UpdateGameSettings();
 
 	for (i = RepClients.Length - 1; i >= 0; i--)
 	{

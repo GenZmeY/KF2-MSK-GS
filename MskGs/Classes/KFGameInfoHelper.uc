@@ -74,9 +74,17 @@ public static function UpdateGameSettings(KFGameInfo_Survival KFGI, bool bUsesSt
 				if (KFGI.WorldInfo.IsConsoleDedicatedServer() || KFGI.WorldInfo.IsEOSDedicatedServer())
 				{
 					KFGameSettings.MapName = KFGI.WorldInfo.GetMapName(true);
+					// Old:
+					//foreach KFGI.WorldInfo.AllControllers(class'PlayerController', PC)
+					//	if (PC.bIsPlayer
+					//	&& PC.PlayerReplicationInfo != none
+					//	&& !PC.PlayerReplicationInfo.bBot)
+					//		NumHumanPlayers++;
+					
 					foreach KFGI.WorldInfo.AllControllers(class'PlayerController', PC)
 						if (PC.bIsPlayer
 						&& PC.PlayerReplicationInfo != none
+						&& !PC.PlayerReplicationInfo.bOnlySpectator
 						&& !PC.PlayerReplicationInfo.bBot)
 							NumHumanPlayers++;
 
