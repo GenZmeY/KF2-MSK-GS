@@ -37,7 +37,7 @@ function modded_xp () # $1: XP, $2: Percent
 	printf "%.0f" $(echo "${1}*${Scale}" | bc)
 }
 
-for Percent in 05 10 15 20 25 30 35 40 45 50
+for Percent in 010 020 030 040 050 060 070 080 090 100
 do
 	echo $Percent
 	for Zed in ${ZedList[*]}

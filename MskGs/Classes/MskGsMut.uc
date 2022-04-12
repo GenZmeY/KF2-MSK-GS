@@ -11,7 +11,7 @@ var config array<string> KickProtectedList;
 var config array<string> AdminList;
 var config array<int> PerPlayerMaxMonsters;
 
-var bool bXpNotifications;
+var public bool bXpNotifications;
 var bool bInitialized;
 
 var array<MskGsRepInfo> RepClients;
@@ -276,16 +276,16 @@ function AddMskGsMember(Controller C)
 		if (MskGsMemberList.Length >= 10)
 		{
 			if (C.PlayerReplicationInfo != NONE)
-				WorldInfo.Game.Broadcast(C, C.PlayerReplicationInfo.PlayerName$" gives a boost to this server! XP bonus: +50% (MAX!)");
+				WorldInfo.Game.Broadcast(C, C.PlayerReplicationInfo.PlayerName$" gives a boost to this server! XP bonus: +100% (MAX!)");
 			else
-				WorldInfo.Game.Broadcast(C, "XP bonus: +50% (MAX!)");
+				WorldInfo.Game.Broadcast(C, "XP bonus: +100% (MAX!)");
 		}
 		else
 		{
 			if (C.PlayerReplicationInfo != NONE)
-				WorldInfo.Game.Broadcast(C, C.PlayerReplicationInfo.PlayerName$" gives a boost to this server! XP bonus: +"$string(MskGsMemberList.Length * 5)$"%");
+				WorldInfo.Game.Broadcast(C, C.PlayerReplicationInfo.PlayerName$" gives a boost to this server! XP bonus: +"$string(MskGsMemberList.Length * 10)$"%");
 			else
-				WorldInfo.Game.Broadcast(C, "XP bonus: +"$string(MskGsMemberList.Length * 5)$"%");
+				WorldInfo.Game.Broadcast(C, "XP bonus: +"$string(MskGsMemberList.Length * 10)$"%");
 		}
 	}
 	MyKFGI.UpdateGameSettings();
@@ -330,16 +330,16 @@ function NotifyLogout(Controller C)
 			if (MskGsMemberList.Length >= 10)
 			{
 				if (C.PlayerReplicationInfo != NONE)
-					WorldInfo.Game.Broadcast(C, C.PlayerReplicationInfo.PlayerName$" left the game. XP bonus: +50% (MAX!)");
+					WorldInfo.Game.Broadcast(C, C.PlayerReplicationInfo.PlayerName$" left the game. XP bonus: +100% (MAX!)");
 				else
-					WorldInfo.Game.Broadcast(C, "XP bonus: +50% (MAX!)");
+					WorldInfo.Game.Broadcast(C, "XP bonus: +100% (MAX!)");
 			}
 			else if (MskGsMemberList.Length > 0)
 			{
 				if (C.PlayerReplicationInfo != NONE)
-					WorldInfo.Game.Broadcast(C, C.PlayerReplicationInfo.PlayerName$" left the game. XP bonus: +"$string(MskGsMemberList.Length * 5)$"%");
+					WorldInfo.Game.Broadcast(C, C.PlayerReplicationInfo.PlayerName$" left the game. XP bonus: +"$string(MskGsMemberList.Length * 10)$"%");
 				else
-					WorldInfo.Game.Broadcast(C, "XP bonus: +"$string(MskGsMemberList.Length * 5)$"%");
+					WorldInfo.Game.Broadcast(C, "XP bonus: +"$string(MskGsMemberList.Length * 10)$"%");
 			}
 			else
 			{
