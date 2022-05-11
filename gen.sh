@@ -1,6 +1,7 @@
 #!/bin/bash
 
 OrigDir="./OrigKFPawnMonsters"
+OutputDir="./GeneratedProxies"
 
 ZedList=(
 	"KFPawnProxy_ZedBloat"
@@ -29,7 +30,25 @@ ZedList=(
 	"KFPawnProxy_ZedScrake"
 	"KFPawnProxy_ZedSiren"
 	"KFPawnProxy_ZedStalker"
+	"WMPawn_ZedClot_Slasher_Omega"
+	"WMPawn_ZedCrawler_Mini"
+	"WMPawn_ZedCrawler_Medium"
+	"WMPawn_ZedCrawler_Big"
+	"WMPawn_ZedCrawler_Huge"
+	"WMPawn_ZedCrawler_Ultra"
+	"WMPawn_ZedFleshpound_Predator"
+	"WMPawn_ZedFleshpound_Omega"
+	"WMPawn_ZedGorefast_Omega"
+	"WMPawn_ZedHusk_Tiny"
+	"WMPawn_ZedHusk_Omega"
+	"WMPawn_ZedScrake_Tiny"
+	"WMPawn_ZedScrake_Omega"
+	"WMPawn_ZedScrake_Emperor"
+	"WMPawn_ZedSiren_Omega"
+	"WMPawn_ZedStalker_Omega"
 )
+
+rm -rf "$OutputDir" && mkdir -p "$OutputDir"
 
 function modded_xp () # $1: XP, $2: Percent
 {
@@ -42,6 +61,7 @@ do
 	echo $Percent
 	for Zed in ${ZedList[*]}
 	do
+	(
 		ProxyZed="${Zed}_${Percent}"
 		echo $ProxyZed
 		cp "$OrigDir/$Zed.uc" "$ProxyZed.uc"
@@ -54,5 +74,7 @@ do
 			ModdedXP=$(modded_xp "$CurrentExp" "$Percent")
 			sed -i "s|$XPValue|XPValues($CurrentDiff)=$ModdedXP // $CurrentExp|g" "$ProxyZed.uc"
 		done
+		mv -f "$ProxyZed.uc" "$OutputDir"
+	) &
 	done
 done
