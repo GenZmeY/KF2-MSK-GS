@@ -1,5 +1,4 @@
-class KFGameInfoHelper extends Object
-	dependson(PreloadContent);
+class KFGameInfoHelper extends Object;
 
 public static function UpdateGameSettings(KFGameInfo_Survival KFGI, bool bUsesStats, string GameModeClass, MskGsMut Mut)
 {
