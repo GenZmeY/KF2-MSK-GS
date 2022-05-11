@@ -16,7 +16,6 @@ function UpdateGameSettings()
 
 protected function DistributeMoneyAndXP(class<KFPawn_Monster> MonsterClass, const out array<DamageInfo> DamageHistory, Controller Killer)
 {
-	`log(">>>>>>>>>>" @ KFGIH.static.PickProxyZed(MonsterClass, Killer, Mut));
 	Super.DistributeMoneyAndXP(KFGIH.static.PickProxyZed(MonsterClass, Killer, Mut), DamageHistory, Killer);
 }
 
