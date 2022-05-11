@@ -1,4 +1,5 @@
-class WMPawn_ZedHusk_Omega_030 extends WMPawn_ZedHusk_NoDAR;
+class WMPawn_ZedHusk_Omega_030 extends KFPawn_ZedHusk
+	dependson(PreloadContent);
 
 defaultproperties
 {

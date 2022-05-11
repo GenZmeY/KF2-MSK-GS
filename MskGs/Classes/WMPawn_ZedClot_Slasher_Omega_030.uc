@@ -1,4 +1,5 @@
-class WMPawn_ZedClot_Slasher_Omega_030 extends KFPawn_ZedClot_Slasher;
+class WMPawn_ZedClot_Slasher_Omega_030 extends KFPawn_ZedClot_Slasher
+	dependson(PreloadContent);
 
 defaultproperties
 {

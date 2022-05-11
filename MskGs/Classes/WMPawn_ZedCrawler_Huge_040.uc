@@ -1,4 +1,5 @@
-class WMPawn_ZedCrawler_Huge_040 extends WMPawn_ZedCrawler_NoElite;
+class WMPawn_ZedCrawler_Huge_040 extends KFPawn_ZedCrawler
+	dependson(PreloadContent);
 
 defaultproperties
 {

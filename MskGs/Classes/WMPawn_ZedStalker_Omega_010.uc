@@ -1,4 +1,5 @@
-class WMPawn_ZedStalker_Omega_010 extends WMPawn_ZedStalker_NoDAR;
+class WMPawn_ZedStalker_Omega_010 extends KFPawn_ZedStalker
+	dependson(PreloadContent);
 
 defaultproperties
 {

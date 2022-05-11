@@ -1,6 +1,3 @@
 [submodule "tools"]
 	path = tools
 	url = https://github.com/GenZmeY/KF2-BuildTools
-[submodule "ZedternalReborn"]
-	path = ZedternalReborn
-	url = https://github.com/Erxandros/Zedternal-Reborn

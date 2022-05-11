@@ -1,4 +1,5 @@
-class WMPawn_ZedGorefast_Omega_080 extends WMPawn_ZedGorefast_NoDualBlade;
+class WMPawn_ZedGorefast_Omega_080 extends KFPawn_ZedGorefast
+	dependson(PreloadContent);
 
 defaultproperties
 {
