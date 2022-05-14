@@ -96,13 +96,6 @@ simulated event PostBeginPlay()
 {
     super.PostBeginPlay();
 
-	if (WorldInfo.Game.BaseMutator == None)
-		WorldInfo.Game.BaseMutator = Self;
-	else
-		WorldInfo.Game.BaseMutator.AddMutator(Self);
-	
-	if (bDeleteMe) return;
-	
 	Initialize();
 }
 
