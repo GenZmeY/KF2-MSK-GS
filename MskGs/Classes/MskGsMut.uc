@@ -120,6 +120,12 @@ function Initialize()
 
 	MyKFGI.KFGFxManagerClass = class'MskGsGFxMoviePlayer_Manager';
 	MyKFGI.MyKFGRI.VoteCollectorClass = class'MskGsVoteCollector';
+	if (MyKFGI.PlayerControllerClass == class'KFGame.KFPlayerController')
+		MyKFGI.PlayerControllerClass = class'MskGsPlayerController';
+	else if (MyKFGI.PlayerControllerClass == class'KFGameContent.KFPlayerControllerVersus')
+		MyKFGI.PlayerControllerClass = class'MskGsPlayerControllerVersus';
+	else if (MyKFGI.PlayerControllerClass == class'KFGame.KFPlayerController_WeeklySurvival')
+		MyKFGI.PlayerControllerClass = class'MskGsPlayerController_WeeklySurvival';
 	MyKFGI.MyKFGRI.VoteCollector = new(MyKFGI.MyKFGRI) MyKFGI.MyKFGRI.VoteCollectorClass;
 	
 	VoteCollector = MskGsVoteCollector(MyKFGI.MyKFGRI.VoteCollector);
@@ -291,6 +297,8 @@ function NotifyLogin(Controller C)
 	if (C == None) return;
 	
 	Initialize();
+	
+	`log("NotifyLogin:" @ C);
 	
 	RepInfo = Spawn(class'MskGsRepInfo', KFPlayerController(C));
 	RepInfo.C = C;
