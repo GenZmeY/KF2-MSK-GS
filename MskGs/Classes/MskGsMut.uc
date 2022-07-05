@@ -30,7 +30,7 @@ function InitMutator(string Options, out string ErrorMessage)
 		return;
 	}
 	
-	MaxPlayers = Clamp(MyKFGI.GetIntOption(Options, "MaxPlayers", MaxPlayers), 6, 128);
+	MaxPlayers = Clamp(MyKFGI.GetIntOption(Options, "MaxPlayers", MaxPlayers), 6, 256);
 	MaxPlayersAllowed = MaxPlayers;
 	MyKFGI.MaxPlayers = MaxPlayers;
 	MyKFGI.MaxPlayersAllowed = MaxPlayersAllowed;
@@ -118,7 +118,6 @@ function Initialize()
 
 	InitConfig();
 
-	MyKFGI.KFGFxManagerClass = class'MskGsGFxMoviePlayer_Manager';
 	MyKFGI.MyKFGRI.VoteCollectorClass = class'MskGsVoteCollector';
 	MyKFGI.MyKFGRI.VoteCollector = new(MyKFGI.MyKFGRI) MyKFGI.MyKFGRI.VoteCollectorClass;
 	
@@ -308,7 +307,7 @@ function NotifyLogin(Controller C)
 function NotifyLogout(Controller C)
 {
 	local MskGsVoteCollector VoteCollector;
-	local int i;
+	local MskGsRepInfo RepInfo;
 	
 	if (C == None) return;
 	
@@ -347,16 +346,16 @@ function NotifyLogout(Controller C)
 		MyKFGI.UpdateGameSettings();
 	}
 
-	for (i = RepClients.Length - 1; i >= 0; i--)
+	foreach RepClients(RepInfo)
 	{
-		if (RepClients[i].C == C)
+		if (RepInfo.C == C)
 		{
-			RepClients[i].Destroy();
-			RepClients.Remove(i, 1);
+			RepClients.RemoveItem(RepInfo);
+			RepInfo.Destroy();
 		}
 	}
 	
-    super.NotifyLogout(C);
+	super.NotifyLogout(C);
 }
 
 defaultproperties
