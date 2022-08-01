@@ -1,5 +1,5 @@
-Class MskGsMut extends KFMutator
-	config(MskGs);
+class MSKGS_Mut extends KFMutator
+	config(MSKGS);
 
 const CurrentVersion = 3;
 var config int ConfigVersion;
