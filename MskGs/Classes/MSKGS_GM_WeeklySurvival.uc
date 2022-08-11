@@ -1,6 +1,6 @@
 class MSKGS_GM_WeeklySurvival extends KFGameInfo_WeeklySurvival;
 
-const GI  = class'MSKGS_GM_GameInfo';
+const GI  = class'MSKGS_GameInfo';
 const GIC = "KFGameContent.KFGameInfo_WeeklySurvival";
 
 var public MSKGSMut Mut;

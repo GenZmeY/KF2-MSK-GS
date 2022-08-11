@@ -1,6 +1,6 @@
 class MSKGS_GM_Endless extends KFGameInfo_Endless;
 
-const GI  = class'MSKGS_GM_GameInfo';
+const GI  = class'MSKGS_GameInfo';
 const GIC = "KFGameContent.KFGameInfo_Endless";
 
 var public MSKGS_Mut Mut;

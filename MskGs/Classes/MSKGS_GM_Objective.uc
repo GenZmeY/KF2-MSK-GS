@@ -1,6 +1,6 @@
 class MSKGS_GM_Objective extends KFGameInfo_Objective;
 
-const GI  = class'MSKGS_GM_GameInfo';
+const GI  = class'MSKGS_GameInfo';
 const GIC = "KFGameContent.KFGameInfo_Objective";
 
 var public MSKGSMut Mut;

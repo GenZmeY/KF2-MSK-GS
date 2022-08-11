@@ -1,6 +1,6 @@
-class MSKGS_GM_GameInfo extends Object;
+class MSKGS_GameInfo extends Object;
 
-public static function UpdateGameSettings(KFGameInfo_Survival KFGI, string GameModeClass, MSKGSMut Mut)
+public static function UpdateGameSettings(KFGameInfo_Survival KFGI, string GameModeClass, MSKGS_Mut Mut)
 {
 	local name SessionName;
 	local KFOnlineGameSettings KFGameSettings;
@@ -67,7 +67,7 @@ public static function UpdateGameSettings(KFGameInfo_Survival KFGI, string GameM
 
 				KFGameSettings.NumPublicConnections = KFGI.MaxPlayersAllowed;
 				KFGameSettings.bRequiresPassword = KFGI.RequiresPassword();
-				KFGameSettings.bCustom = true;
+				KFGameSettings.bCustom    = false;
 				KFGameSettings.bUsesStats = true;
 				KFGameSettings.NumSpectators = KFGI.NumSpectators;
 				
@@ -102,7 +102,7 @@ public static function UpdateGameSettings(KFGameInfo_Survival KFGI, string GameM
 	}
 }
 
-public static function class<KFPawn_Monster> PickProxyZed(class<KFPawn_Monster> MonsterClass, MSKGSMut Mut)
+public static function class<KFPawn_Monster> PickProxyZed(class<KFPawn_Monster> MonsterClass, MSKGS_Mut Mut)
 {
 	local String SMC;
 	local Name NMC;
@@ -115,18 +115,18 @@ public static function class<KFPawn_Monster> PickProxyZed(class<KFPawn_Monster> 
 	
 	switch (Boost)
 	{
-		case 0:  return MonsterClass;
-		case 1:	 return PickProxyZed010(NMC, MonsterClass);
-		case 2:  return PickProxyZed020(NMC, MonsterClass);
-		case 3:  return PickProxyZed030(NMC, MonsterClass);
-		case 4:  return PickProxyZed040(NMC, MonsterClass);
-		case 5:  return PickProxyZed050(NMC, MonsterClass);
-		case 6:  return PickProxyZed060(NMC, MonsterClass);
-		case 7:  return PickProxyZed070(NMC, MonsterClass);
-		case 8:  return PickProxyZed080(NMC, MonsterClass);
-		case 9:  return PickProxyZed090(NMC, MonsterClass);
-		case 10: return PickProxyZed100(NMC, MonsterClass);
-		default: return PickProxyZed100(NMC, MonsterClass);
+		case 0:   return MonsterClass;
+		case 10:  return PickProxyZed010(NMC, MonsterClass);
+		case 20:  return PickProxyZed020(NMC, MonsterClass);
+		case 30:  return PickProxyZed030(NMC, MonsterClass);
+		case 40:  return PickProxyZed040(NMC, MonsterClass);
+		case 50:  return PickProxyZed050(NMC, MonsterClass);
+		case 60:  return PickProxyZed060(NMC, MonsterClass);
+		case 70:  return PickProxyZed070(NMC, MonsterClass);
+		case 80:  return PickProxyZed080(NMC, MonsterClass);
+		case 90:  return PickProxyZed090(NMC, MonsterClass);
+		case 100: return PickProxyZed100(NMC, MonsterClass);
+		default:  return PickProxyZed100(NMC, MonsterClass);
 	}
 }
 

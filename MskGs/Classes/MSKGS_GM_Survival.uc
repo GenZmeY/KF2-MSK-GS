@@ -1,6 +1,6 @@
 class MSKGS_GM_Survival extends KFGameInfo_Survival;
 
-const GI  = class'MSKGS_GM_GameInfo';
+const GI  = class'MSKGS_GameInfo';
 const GIC = "KFGameContent.KFGameInfo_Survival";
 
 var public MSKGSMut Mut;
