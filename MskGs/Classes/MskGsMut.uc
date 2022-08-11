@@ -4,10 +4,9 @@ Class MskGsMut extends KFMutator
 const CurrentVersion = 3;
 var config int ConfigVersion;
 
-var config bool bEnableMapStats; var config string SortStats; var config bool bOfficialNextMapOnly; var config bool bRandomizeNextMap; var config int WeapLifespan;
+var config int WeapLifespan;
 var config int DoshLifespan;
 
-var config array<string> KickProtectedList;
 var config array<string> AdminList;
 var config array<int> PerPlayerMaxMonsters;
 
@@ -42,11 +41,8 @@ function InitConfig()
 	switch (ConfigVersion)
 	{
 		case 0: // which means there is no config right now
-			bEnableMapStats = True;
-			SortStats = "CounterDesc";
-			bOfficialNextMapOnly = True;
-			bRandomizeNextMap = True;
 			WeapLifespan = 60 * 60;
+			
 		case 1:
 			if (PerPlayerMaxMonsters.Length != 6)
 			{
@@ -75,18 +71,6 @@ function InitConfig()
 			`log("[MskGsMut] Warn: The config version will be changed to "@CurrentVersion);
 			break;
 	}
-	
-	// Check and correct some values
-	if (!(SortStats ~= "CounterAsc"
-		|| SortStats ~= "CounterDesc"
-		|| SortStats ~= "NameAsc"
-		|| SortStats ~= "NameDesc"
-		|| SortStats ~= "False"))
-	{
-		`log("[MskGsMut] Warn: SortStats value not recognized ("$SortStats$") and will be set to False");
-		`log("[MskGsMut] Warn: Valid values for SortStats: False CounterAsc CounterDesc NameAsc NameDesc");
-		SortStats = "False";
-	}
 
 	ConfigVersion = CurrentVersion;
 	SaveConfig();
@@ -101,7 +85,6 @@ simulated event PostBeginPlay()
 
 function Initialize()
 {
-	local MskGsVoteCollector VoteCollector;
 	local OnlineSubsystem steamworks;
 	local string Person;
 	local UniqueNetId PersonUID;
@@ -118,15 +101,6 @@ function Initialize()
 
 	InitConfig();
 
-	MyKFGI.MyKFGRI.VoteCollectorClass = class'MskGsVoteCollector';
-	MyKFGI.MyKFGRI.VoteCollector = new(MyKFGI.MyKFGRI) MyKFGI.MyKFGRI.VoteCollectorClass;
-	
-	VoteCollector = MskGsVoteCollector(MyKFGI.MyKFGRI.VoteCollector);
-	VoteCollector.bEnableMapStats = bEnableMapStats;
-	VoteCollector.bOfficialNextMapOnly = bOfficialNextMapOnly;
-	VoteCollector.bRandomizeNextMap = bRandomizeNextMap;
-	VoteCollector.SortPolicy = SortStats;
-	
 	if (MskGs_Endless(MyKFGI) != None)
 	{
 		bXpNotifications = true;
@@ -154,21 +128,6 @@ function Initialize()
 	}
 	
 	steamworks = class'GameEngine'.static.GetOnlineSubsystem();
-	
-	foreach KickProtectedList(Person)
-	{
-		if (IsUID(Person) && steamworks.StringToUniqueNetId(Person, PersonUID))
-		{
-			if (VoteCollector.KickProtectedList.Find('Uid', PersonUID.Uid) == -1)
-				VoteCollector.KickProtectedList.AddItem(PersonUID);
-		}
-		else if (steamworks.Int64ToUniqueNetId(Person, PersonUID))
-		{
-			if (VoteCollector.KickProtectedList.Find('Uid', PersonUID.Uid) == -1)
-				VoteCollector.KickProtectedList.AddItem(PersonUID);
-		}
-		else `Log("[MskGsMut] WARN: Can't add person:"@Person);
-	}
 	
 	foreach AdminList(Person)
 	{
@@ -306,15 +265,11 @@ function NotifyLogin(Controller C)
 
 function NotifyLogout(Controller C)
 {
-	local MskGsVoteCollector VoteCollector;
 	local MskGsRepInfo RepInfo;
 	
 	if (C == None) return;
 	
 	Initialize();
-	
-	VoteCollector = MskGsVoteCollector(MyKFGI.MyKFGRI.VoteCollector);
-    VoteCollector.NotifyLogout(C);
 	
 	if (MskGsMemberList.Find(C) != INDEX_NONE)
 	{
