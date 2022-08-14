@@ -1,1 +1,9 @@
-Who are you? What are you doing here? O_o
+Mutator providing some functions of [url=https://steamcommunity.com/groups/msk-gs]MSK-GS[/url] servers.
+
+Contains implementations of my ideas and/or combinations of other mutators for compatibility.
+
+Not intended for use with other servers and will never be made available to the public, so don't ask me how to use it.
+
+Of course I can't forbid you to use it, but then don't be surprised that your server can break at any second due to the fact that I suddenly decided to delete or redo something in this mutator.
+
+If you are interested in some feature from this mutator, you can subscribe to [url=https://steamcommunity.com/id/GenZmeY/myworkshopfiles/]me in the steam workshop[/url] and follow my work. I try to post everything I do to the public. I think someday I will be able to put everything into separate mutators and abandon this hodgepodge.

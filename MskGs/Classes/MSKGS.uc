@@ -7,7 +7,7 @@ const CfgRemoveItems = class'RemoveItems';
 var private config int        Version;
 var private config E_LogLevel LogLevel;
 
-var private KFGameInfo KFGI;
+var private KFGameInfo            KFGI;
 var private KFGameReplicationInfo KFGRI;
 
 var private Array<MSKGS_RepInfo> RepInfos;

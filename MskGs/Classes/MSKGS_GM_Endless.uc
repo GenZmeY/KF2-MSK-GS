@@ -5,7 +5,7 @@ const GIC = "KFGameContent.KFGameInfo_Endless";
 
 var public MSKGS_Mut Mut;
 
-simulated function ExileServerUsingKickBan()
+public simulated function ExileServerUsingKickBan()
 {
 	return;
 }

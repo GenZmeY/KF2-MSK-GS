@@ -41,7 +41,7 @@ function main ()
 		(
 			ProxyZed="Proxy_${Zed}_${PercentStr}"
 			TmpZed="$TmpDir/$ProxyZed.uc"
-			echo $ProxyZed
+			echo "$ProxyZed"
 			cp "$PawnsDir/$Zed.uc" "$TmpZed"
 			sed -i "s|$Zed|$ProxyZed|g" "$TmpZed"
 			grep -Po 'XPValues\(\d\)=(\d+)' "$TmpZed" | \
