@@ -7,7 +7,6 @@ var config int ConfigVersion;
 var config int WeapLifespan;
 var config int DoshLifespan;
 
-var config array<string> AdminList;
 var config array<int> PerPlayerMaxMonsters;
 
 var public bool bXpNotifications;
@@ -15,7 +14,6 @@ var bool bInitialized;
 
 var array<MskGsRepInfo> RepClients;
 var array<Controller> MskGsMemberList;
-var array<UniqueNetId> AdminUIDList;
 
 function InitMutator(string Options, out string ErrorMessage)
 {
@@ -85,10 +83,6 @@ simulated event PostBeginPlay()
 
 function Initialize()
 {
-	local OnlineSubsystem steamworks;
-	local string Person;
-	local UniqueNetId PersonUID;
-	
 	if (bInitialized) return;
 	
 	if (MyKFGI == None || MyKFGI.MyKFGRI == None)
@@ -125,23 +119,6 @@ function Initialize()
 	{
 		bXpNotifications = true;
 		MskGs_WeeklySurvival(MyKFGI).Mut = Self;
-	}
-	
-	steamworks = class'GameEngine'.static.GetOnlineSubsystem();
-	
-	foreach AdminList(Person)
-	{
-		if (IsUID(Person) && steamworks.StringToUniqueNetId(Person, PersonUID))
-		{
-			if (AdminUIDList.Find('Uid', PersonUID.Uid) == -1)
-				AdminUIDList.AddItem(PersonUID);
-		}
-		else if (steamworks.Int64ToUniqueNetId(Person, PersonUID))
-		{
-			if (AdminUIDList.Find('Uid', PersonUID.Uid) == -1)
-				AdminUIDList.AddItem(PersonUID);
-		}
-		else `Log("[MskGsMut] WARN: Can't add admin:"@Person);
 	}
 	
 	ModifySpawnManager();
@@ -204,21 +181,6 @@ function bool CheckRelevance(Actor Other)
 	return SuperRelevant;
 }
 
-function bool PreventDeath(Pawn Killed, Controller Killer, class<DamageType> damageType, vector HitLocation)
-{
-	local KFWeapon TempWeapon;
-	local KFPawn_Human KFP;
-	
-	KFP = KFPawn_Human(Killed);
-	
-	if (Role >= ROLE_Authority && KFP != None && KFP.InvManager != none)
-		foreach KFP.InvManager.InventoryActors(class'KFWeapon', TempWeapon)
-			if (TempWeapon != none && TempWeapon.bDropOnDeath && TempWeapon.CanThrow())
-				KFP.TossInventory(TempWeapon);
-
-	return Super.PreventDeath(Killed, Killer, damageType, HitLocation);
-}
-
 function AddMskGsMember(Controller C)
 {
 	MskGsMemberList.AddItem(C);
@@ -256,9 +218,6 @@ function NotifyLogin(Controller C)
 	RepInfo.C = C;
 	RepInfo.Mut = Self;
 	RepClients.AddItem(RepInfo);
-	
-	if (AdminUIDList.Find('Uid', C.PlayerReplicationInfo.UniqueId.Uid) != -1)
-		C.PlayerReplicationInfo.bAdmin = true;
 	
     super.NotifyLogin(C);
 }
