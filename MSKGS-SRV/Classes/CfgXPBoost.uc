@@ -2,15 +2,18 @@ class CfgXPBoost extends Object
 	config(MSKGS)
 	abstract;
 
-var private config String OwnerId;
-var private config String GroupID;
-
 var public  config int    MaxBoost;
 
 var public  config int    BoostOwner;
 var public  config int    BoostAdmin;
 var public  config int    BoostGroup;
 var public  config int    BoostPlayer;
+
+var public  config String HexColorOwner;
+var public  config String HexColorAdmin;
+var public  config String HexColorGroup;
+var public  config String HexColorPlayer;
+var public  config String HexColorLeave;
 
 var public  config int    CheckGroupTimer;
 
@@ -71,46 +74,36 @@ public static function Load(E_LogLevel LogLevel)
 		`Log_Error("CheckGroupTimer" @ "(" $ default.CheckGroupTimer $ ")" @ "must be equal or greater than 0");
 		default.CheckGroupTimer = 10;
 	}
+	
+	if (!IsValidHexColor(default.HexColorOwner, LogLevel))
+	{
+		`Log_Error("HexColorOwner" @ "(" $ default.HexColorOwner $ ")" @ "is not valid hex color");
+	}
+	
+	if (!IsValidHexColor(default.HexColorAdmin, LogLevel))
+	{
+		`Log_Error("HexColorAdmin" @ "(" $ default.HexColorAdmin $ ")" @ "is not valid hex color");
+	}
+	
+	if (!IsValidHexColor(default.HexColorGroup, LogLevel))
+	{
+		`Log_Error("HexColorGroup" @ "(" $ default.HexColorGroup $ ")" @ "is not valid hex color");
+	}
+	
+	if (!IsValidHexColor(default.HexColorPlayer, LogLevel))
+	{
+		`Log_Error("HexColorPlayer" @ "(" $ default.HexColorPlayer $ ")" @ "is not valid hex color");
+	}
+	
+	if (!IsValidHexColor(default.HexColorLeave, LogLevel))
+	{
+		`Log_Error("HexColorLeave" @ "(" $ default.HexColorLeave $ ")" @ "is not valid hex color");
+	}
 }
 
-public static function UniqueNetId LoadOwnerId(OnlineSubsystem OS, E_LogLevel LogLevel)
-{
-	local UniqueNetId UID;
-	
-	if (AnyToUID(OS, default.OwnerId, UID, LogLevel))
-	{
-		`Log_Debug("Loaded OwnerId:" @ default.OwnerId);
-	}
-	else
-	{
-		`Log_Warn("Can't load OwnerId:" @ default.OwnerId);
-	}
-	
-	return UID;
-}
-
-public static function UniqueNetId LoadGroupID(OnlineSubsystem OS, E_LogLevel LogLevel)
-{
-	local UniqueNetId UID;
-	
-	if (AnyToUID(OS, default.GroupID, UID, LogLevel))
-	{
-		`Log_Debug("Loaded GroupID:" @ default.GroupID);
-	}
-	else
-	{
-		`Log_Warn("Can't load GroupID:" @ default.GroupID);
-	}
-	
-	return UID;
-}
-
-protected static function ApplyDefault(E_LogLevel LogLevel)
+private static function ApplyDefault(E_LogLevel LogLevel)
 {
 	`Log_TraceStatic();
-	
-	default.OwnerId = "76561198001617867";
-	default.GroupID = "0x017000000223386E";
 	
 	default.MaxBoost    = 100;
 	
@@ -119,21 +112,50 @@ protected static function ApplyDefault(E_LogLevel LogLevel)
 	default.BoostGroup  = 10;
 	default.BoostPlayer = 0;
 	
+	default.HexColorOwner  = "00FF00";
+	default.HexColorAdmin  = "00FF00";
+	default.HexColorGroup  = "00FF00";
+	default.HexColorPlayer = "FFFFFF";
+	default.HexColorLeave  = "FF0000";
+	
 	default.CheckGroupTimer = 10;
 }
 
-private static function bool IsUID(String ID, E_LogLevel LogLevel)
+private static function bool IsValidHexColor(String HexColor, E_LogLevel LogLevel)
 {
+	local byte Index;
+	
 	`Log_TraceStatic();
 	
-	return (Locs(Left(ID, 2)) == "0x");
-}
+	if (len(HexColor) != 6) return false;
+	
+	HexColor = Locs(HexColor);
+	
+	for (Index = 0; Index < 6; ++Index)
+	{
+		switch (Mid(HexColor, Index, 1))
+		{
+			case "0": break;
+			case "1": break;
+			case "2": break;
+			case "3": break;
+			case "4": break;
+			case "5": break;
+			case "6": break;
+			case "7": break;
+			case "8": break;
+			case "9": break;
+			case "a": break;
+			case "b": break;
+			case "c": break;
+			case "d": break;
+			case "e": break;
+			case "f": break;
+			default: return false;
+		}
+	}
 
-private static function bool AnyToUID(OnlineSubsystem OS, String ID, out UniqueNetId UID, E_LogLevel LogLevel)
-{
-	`Log_TraceStatic();
-	
-	return IsUID(ID, LogLevel) ? OS.StringToUniqueNetId(ID, UID) : OS.Int64ToUniqueNetId(ID, UID);
+	return true;
 }
 
 defaultproperties

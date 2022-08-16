@@ -1,15 +1,34 @@
 class MSKGS extends Info
+	implements(IMSKGS)
 	config(MSKGS);
 
 const LatestVersion = 1;
 
+const CfgCredits      = class'CfgCredits';
 const CfgLifespan     = class'CfgLifespan';
 const CfgSpawnManager = class'CfgSpawnManager';
 const CfgXPBoost      = class'CfgXPBoost';
 const CfgSrvRank      = class'CfgSrvRank';
 
-var public  int  XPBoost;
-var public  bool XPNotifications;
+const MSKGS_GameInfo  = class'MSKGS_GameInfo';
+
+struct ZedMap
+{
+	var const class<KFPawn_Monster> Zed;
+	var const class<KFPawn_Monster> Proxy;
+};
+
+struct BoostMap
+{
+	var const int BoostValue;
+	var const Array<ZedMap> Zeds;
+};
+
+var private Array<BoostMap> XPBoosts;
+var private Array<ZedMap>   ZedProxies;
+
+var private int  XPBoost;
+var private bool XPNotifications;
 
 var private config int        Version;
 var private config E_LogLevel LogLevel;
@@ -67,6 +86,7 @@ private function PreInit()
 		SaveConfig();
 	}
 	
+	CfgCredits.static.InitConfig(Version, LatestVersion, LogLevel);
 	CfgLifespan.static.InitConfig(Version, LatestVersion, LogLevel);
 	CfgSpawnManager.static.InitConfig(Version, LatestVersion, LogLevel);
 	CfgXPBoost.static.InitConfig(Version, LatestVersion, LogLevel);
@@ -106,6 +126,7 @@ private function PreInit()
 	}
 	`Log_Base("LogLevel:" @ LogLevel);
 	
+	CfgCredits.static.Load(LogLevel);
 	CfgLifespan.static.Load(LogLevel);
 	CfgSpawnManager.static.Load(LogLevel);
 	CfgXPBoost.static.Load(LogLevel);
@@ -119,8 +140,8 @@ private function PreInit()
 		return;
 	}
 	
-	OwnerID = CfgXPBoost.static.LoadOwnerID(OS, LogLevel);
-	GroupID = CfgXPBoost.static.LoadGroupID(OS, LogLevel);
+	OwnerID = CfgCredits.static.LoadOwnerID(OS, LogLevel);
+	GroupID = CfgCredits.static.LoadGroupID(OS, LogLevel);
 }
 
 private function PostInit()
@@ -159,39 +180,52 @@ private function PostInit()
 	{
 		XPNotifications = true;
 		MSKGS_GM_Endless(KFGI).MSKGS    = Self;
+		MSKGS_GM_Endless(KFGI).GI       = new MSKGS_GameInfo;
 		MSKGS_GM_Endless(KFGI).LogLevel = LogLevel;
 	}
 	else if (MSKGS_GM_Objective(KFGI) != None)
 	{
 		XPNotifications = (KFGI.GameDifficulty != 3);
 		MSKGS_GM_Objective(KFGI).MSKGS    = Self;
+		MSKGS_GM_Objective(KFGI).GI       = new MSKGS_GameInfo;
 		MSKGS_GM_Objective(KFGI).LogLevel = LogLevel;
 	}
 	else if (MSKGS_GM_Survival(KFGI) != None)
 	{
 		XPNotifications = (KFGI.GameDifficulty != 3);
 		MSKGS_GM_Survival(KFGI).MSKGS    = Self;
+		MSKGS_GM_Survival(KFGI).GI       = new MSKGS_GameInfo;
 		MSKGS_GM_Survival(KFGI).LogLevel = LogLevel;
 	}
 	else if (MSKGS_GM_VersusSurvival(KFGI) != None)
 	{
 		XPNotifications = false;
 		MSKGS_GM_VersusSurvival(KFGI).MSKGS    = Self;
+		MSKGS_GM_VersusSurvival(KFGI).GI       = new MSKGS_GameInfo;
 		MSKGS_GM_VersusSurvival(KFGI).LogLevel = LogLevel;
 	}
 	else if (MSKGS_GM_WeeklySurvival(KFGI) != None)
 	{
 		XPNotifications = true;
 		MSKGS_GM_WeeklySurvival(KFGI).MSKGS    = Self;
+		MSKGS_GM_WeeklySurvival(KFGI).GI       = new MSKGS_GameInfo;
 		MSKGS_GM_WeeklySurvival(KFGI).LogLevel = LogLevel;
 	}
 	
+	`Log_Info("GameInfo initialized:" @ KFGI);
+	
+	KFGI.UpdateGameSettings();
+	
 	ModifySpawnManager();
+	
+	`Log_Info("Initialized");
 }
 
 private function ModifySpawnManager()
 {
 	local byte Difficulty, Players;
+	
+	`Log_Trace();
 	
 	if (KFGI.SpawnManager == None)
 	{
@@ -203,13 +237,48 @@ private function ModifySpawnManager()
 	{
 		for (Players = 0; Players < KFGI.SpawnManager.PerDifficultyMaxMonsters[Difficulty].MaxMonsters.Length; Players++)
 		{
-			KFGI.SpawnManager.PerDifficultyMaxMonsters[Difficulty].MaxMonsters[Players] = CfgSpawnManager.default.MaxMonsters[Players];
+			KFGI.SpawnManager.PerDifficultyMaxMonsters[Difficulty].MaxMonsters[Players] = CfgSpawnManager.default.PerPlayerMaxMonsters[Players];
 		}
 	}
+	
+	`Log_Info("SpawnManager modified");
+}
+
+public function class<KFPawn_Monster> PickProxyZed(class<KFPawn_Monster> MonsterClass)
+{
+	local int Index;
+	
+	Index = ZedProxies.Find('Zed', MonsterClass);
+	if (Index == INDEX_NONE)
+	{
+		`Log_Error("Can't find proxy for zed:" @ String(MonsterClass));
+		return MonsterClass;
+	}
+	
+	`Log_Debug("Proxy Zed:" @ ZedProxies[Index].Proxy);
+	
+	return ZedProxies[Index].Proxy;
+}
+
+public function int GetXPBoost()
+{
+	return XPBoost;
+}
+
+public function bool GetXPNotifications()
+{
+	return XPNotifications;
+}
+
+public function E_LogLevel GetLogLevel()
+{
+	return LogLevel;
 }
 
 public function ModifyLifespan(Actor A)
 {
+	`Log_Trace();
+	
 	if (KFDroppedPickup_Cash(A) != None)
 	{
 		if (CfgLifespan.default.Dosh != 0)
@@ -228,6 +297,8 @@ public function ModifyLifespan(Actor A)
 
 public function SetMaxPlayers(int MaxPlayers)
 {
+	`Log_Trace();
+	
 	if (MaxPlayers != INDEX_NONE)
 	{
 		KFGI.MaxPlayers        = MaxPlayers;
@@ -241,13 +312,18 @@ public function NotifyLogin(Controller C)
 
 	if (!CreateRepInfo(C))
 	{
-		`Log_Error("Can't create RepInfo for:" @ C);
+		`Log_Error("Can't create RepInfo for:" @ C @ (C == None ? "" : String(C.PlayerReplicationInfo)));
 	}
 }
 
 public function NotifyLogout(Controller C)
 {
 	`Log_Trace();
+	
+	if (PlayerXPBoost(FindRepInfo(C)) > 0)
+	{
+		DecreaseXPBoost(C);
+	}
 
 	if (!DestroyRepInfo(C))
 	{
@@ -261,17 +337,19 @@ public function bool CreateRepInfo(Controller C)
 	
 	`Log_Trace();
 	
-	if (C == None) return false;
+	if (C == None || C.PlayerReplicationInfo == None) return false;
 	
 	RepInfo = Spawn(class'MSKGS_RepInfo', C);
 	
 	if (RepInfo == None) return false;
 	
-	RepInfo.LogLevel    = LogLevel;
-	RepInfo.MSKGS       = Self;
-	RepInfo.GroupID     = GroupID;
-	RepInfo.ServerOwner = false;
-	
+	RepInfo.Init(
+		LogLevel,
+		Self,
+		GroupID,
+		CfgXPBoost.default.CheckGroupTimer,
+		C.PlayerReplicationInfo.UniqueId == OwnerID);
+		
 	RepInfos.AddItem(RepInfo);
 	
 	return true;
@@ -285,14 +363,12 @@ public function bool DestroyRepInfo(Controller C)
 	
 	if (C == None) return false;
 	
-	foreach RepInfos(RepInfo)
+	RepInfo = FindRepInfo(C);
+	if (RepInfo != None)
 	{
-		if (RepInfo.Owner == C)
-		{
-			RepInfo.SafeDestroy();
-			RepInfos.RemoveItem(RepInfo);
-			return true;
-		}
+		RepInfo.SafeDestroy();
+		RepInfos.RemoveItem(RepInfo);
+		return true;
 	}
 	
 	return false;
@@ -300,118 +376,196 @@ public function bool DestroyRepInfo(Controller C)
 
 public function IncreaseXPBoost(KFPlayerController Booster)
 {
-	local MSKGS_RepInfo RepInfo;
+	local MSKGS_RepInfo BoosterRepInfo;
+	local String HexColor;
+	local int    PlayerBoost;
+	local String PlayerBoostStr;
+	local String TotalBoostStr;
+	local String BoosterName;
+	
+	`Log_Trace();
 	
 	UpdateXPBoost();
-	foreach RepInfos(RepInfo)
-	{
-		if (RepInfo.Owner == Booster)
-		{
-			// TODO: Recive localized message
-			// You give boost to this server
-		}
-		else
-		{
-			// TODO: Recive localized message
-			// Booster give boost to this server
-		}
-	}
-	
 	KFGI.UpdateGameSettings();
+	
+	BoosterRepInfo = FindRepInfo(Booster);
+	TotalBoostStr  = String(XPBoost);
+	BoosterName    = Booster.PlayerReplicationInfo.PlayerName;
+	HexColor       = PlayerHexColor(BoosterRepInfo);
+	PlayerBoost    = PlayerXPBoost(BoosterRepInfo);
+	PlayerBoostStr = String(PlayerBoost);
+	
+	if (XPBoost >= CfgXPBoost.default.MaxBoost)
+	{
+		BroadcastChatLocalized(
+			MSKGS_PlayerGiveBoostToServerMax,
+			HexColor,
+			None,
+			BoosterName,
+			PlayerBoostStr,
+			String(CfgXPBoost.default.MaxBoost));
+	}
+	else if (PlayerBoost == XPBoost)
+	{
+		BroadcastChatLocalized(
+			MSKGS_PlayerGiveBoostToServerFirst,
+			HexColor,
+			None,
+			BoosterName,
+			TotalBoostStr);
+	}
+	else
+	{
+		BroadcastChatLocalized(
+			MSKGS_PlayerGiveBoostToServer,
+			HexColor,
+			None,
+			BoosterName,
+			PlayerBoostStr,
+			TotalBoostStr);
+	}
 }
 
-public function DecreaseXPBoost(KFPlayerController Booster)
+public function DecreaseXPBoost(Controller Booster)
+{
+	local String HexColor;
+	local String TotalBoost;
+	local String BoosterName;
+	
+	`Log_Trace();
+	
+	UpdateXPBoost();
+	KFGI.UpdateGameSettings();
+	
+	HexColor    = CfgXPBoost.default.HexColorLeave;
+	BoosterName = Booster.PlayerReplicationInfo.PlayerName;
+	TotalBoost  = String(XPBoost);
+	
+	if (XPBoost >= CfgXPBoost.default.MaxBoost)
+	{
+		BroadcastChatLocalized(
+			MSKGS_BoosterLeaveServerMax,
+			HexColor,
+			Booster,
+			BoosterName,
+			String(CfgXPBoost.default.MaxBoost));
+	}
+	else if (XPBoost > 0)
+	{
+		BroadcastChatLocalized(
+			MSKGS_BoosterLeaveServer,
+			HexColor,
+			Booster,
+			BoosterName,
+			TotalBoost);
+	}
+	else
+	{
+		BroadcastChatLocalized(
+			MSKGS_BoosterLeaveServerNoBoost,
+			HexColor,
+			Booster,
+			BoosterName);
+	}
+}
+
+private function BroadcastChatLocalized(E_MSKGS_LocalMessageType LMT, String HexColor, optional Controller Except = None, optional String String1, optional String String2, optional String String3)
 {
 	local MSKGS_RepInfo RepInfo;
 	
-	UpdateXPBoost();
 	foreach RepInfos(RepInfo)
 	{
-		if (RepInfo.Owner != Booster)
+		if (RepInfo.Owner != Except)
 		{
-			// TODO: Recive localized message
-			// Booster left the game
+			RepInfo.WriteToChatLocalized(
+				LMT,
+				HexColor,
+				String1,
+				String2,
+				String3);
 		}
 	}
+}
+
+private function MSKGS_RepInfo FindRepInfo(Controller C)
+{
+	local MSKGS_RepInfo RepInfo;
 	
-	KFGI.UpdateGameSettings();
+	foreach RepInfos(RepInfo)
+		if (RepInfo.Owner == C)
+			break;
+	
+	return RepInfo;
 }
 
 public function UpdateXPBoost()
 {
 	local MSKGS_RepInfo RepInfo;
 	local int NextBoost;
+	local int Index;
+	
+	`Log_Trace();
 	
 	NextBoost = 0;
 	foreach RepInfos(RepInfo)
 	{
-		NextBoost += RepInfo.XPBoost();
+		NextBoost += PlayerXPBoost(RepInfo);
+	}
+	
+	if (NextBoost > 0)
+	{
+		Index = XPBoosts.Find('BoostValue', NextBoost);
+		if (Index == INDEX_NONE)
+		{
+			`Log_Error("Can't find boost proxy:" @ NextBoost);
+		}
+		else
+		{
+			ZedProxies = XPBoosts[Index].Zeds;
+		}
 	}
 	
 	XPBoost = NextBoost;
 }
 
-/*
-function AddMskGsMember(Controller C)
+private function int PlayerXPBoost(MSKGS_RepInfo RepInfo)
 {
-	MskGsMemberList.AddItem(C);
-	if (XpNotifications)
+	`Log_Trace();
+	
+	if (RepInfo != None) switch (RepInfo.PlayerType())
 	{
-		if (MskGsMemberList.Length >= 10)
-		{
-			if (C.PlayerReplicationInfo != NONE)
-				WorldInfo.Game.Broadcast(C, C.PlayerReplicationInfo.PlayerName$" gives a boost to this server! XP bonus: +100% (MAX!)");
-			else
-				WorldInfo.Game.Broadcast(C, "XP bonus: +100% (MAX!)");
-		}
-		else
-		{
-			if (C.PlayerReplicationInfo != NONE)
-				WorldInfo.Game.Broadcast(C, C.PlayerReplicationInfo.PlayerName$" gives a boost to this server! XP bonus: +"$string(MskGsMemberList.Length * 10)$"%");
-			else
-				WorldInfo.Game.Broadcast(C, "XP bonus: +"$string(MskGsMemberList.Length * 10)$"%");
-		}
+		case MSKGS_Owner: return CfgXPBoost.default.BoostOwner;
+		case MSKGS_Admin: return CfgXPBoost.default.BoostAdmin;
+		case MSKGS_Group: return CfgXPBoost.default.BoostGroup;
 	}
-	MyKFGI.UpdateGameSettings();
+	
+	return CfgXPBoost.default.BoostPlayer;
 }
 
-function DelMskGsMember(Controller C)
+private function String PlayerHexColor(MSKGS_RepInfo RepInfo)
 {
-	Initialize();
+	`Log_Trace();
 	
-	if (MskGsMemberList.Find(C) != INDEX_NONE)
+	switch (RepInfo.PlayerType())
 	{
-		MskGsMemberList.RemoveItem(C);
-		if (XpNotifications)
-		{
-			if (MskGsMemberList.Length >= 10)
-			{
-				if (C.PlayerReplicationInfo != NONE)
-					WorldInfo.Game.Broadcast(C, C.PlayerReplicationInfo.PlayerName$" left the game. XP bonus: +100% (MAX!)");
-				else
-					WorldInfo.Game.Broadcast(C, "XP bonus: +100% (MAX!)");
-			}
-			else if (MskGsMemberList.Length > 0)
-			{
-				if (C.PlayerReplicationInfo != NONE)
-					WorldInfo.Game.Broadcast(C, C.PlayerReplicationInfo.PlayerName$" left the game. XP bonus: +"$string(MskGsMemberList.Length * 10)$"%");
-				else
-					WorldInfo.Game.Broadcast(C, "XP bonus: +"$string(MskGsMemberList.Length * 10)$"%");
-			}
-			else
-			{
-				if (C.PlayerReplicationInfo != NONE)
-					WorldInfo.Game.Broadcast(C, C.PlayerReplicationInfo.PlayerName$" left the game. No XP bonus now.");
-				else
-					WorldInfo.Game.Broadcast(C, "No XP bonus now.");
-			}
-		}
-		MyKFGI.UpdateGameSettings();
+		case MSKGS_Owner: return CfgXPBoost.default.HexColorOwner;
+		case MSKGS_Admin: return CfgXPBoost.default.HexColorAdmin;
+		case MSKGS_Group: return CfgXPBoost.default.HexColorGroup;
 	}
+	
+	return CfgXPBoost.default.HexColorPlayer;
 }
-*/
 
 DefaultProperties
 {
-
+	XPBoosts.Add({(
+		BoostValue=10,
+		Zeds[0]={(Zed=class'KFPawn_ZedBloat',Proxy=class'KFPawn_ZedBloat')},
+		Zeds[1]={(Zed=class'KFPawn_ZedBloat',Proxy=class'KFPawn_ZedBloat')}
+	)})
+	XPBoosts.Add({(
+		BoostValue=10,
+		Zeds[0]={(Zed=class'KFPawn_ZedBloat',Proxy=class'KFPawn_ZedBloat')},
+		Zeds[1]={(Zed=class'KFPawn_ZedBloat',Proxy=class'KFPawn_ZedBloat')}
+	)})
 }

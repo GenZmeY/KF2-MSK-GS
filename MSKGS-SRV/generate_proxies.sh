@@ -11,7 +11,7 @@ ProxiesDir="$ScriptDir/Classes"
 
 # Gen params
 PercentStart=10
-PercentEnd=100
+PercentEnd=200
 PercentInc=10
 
 function modded_xp () # $1: XP, $2: Percent

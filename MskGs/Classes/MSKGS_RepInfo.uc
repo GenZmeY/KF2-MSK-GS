@@ -1,22 +1,78 @@
 class MSKGS_RepInfo extends ReplicationInfo;
 
-const CfgXPBoost = class'CfgXPBoost';
+const MSKGS_LMT = class'MSKGS_LocalMessage';
 
-var public E_LogLevel  LogLevel;
-var public MSKGS       MSKGS;
-var public UniqueNetId GroupID;
-var public float       CheckGroupTimer;
+enum MSKGS_PlayerType
+{
+	MSKGS_Unknown,
+	MSKGS_Owner,
+	MSKGS_Admin,
+	MSKGS_Group,
+	MSKGS_Player
+};
 
-var private KFPlayerController KFPC;
-var private OnlineSubsystem    OS;
+var private IMSKGS MSKGS;
+var private bool   ServerOwner;
+var private bool   GroupMember;
 
-var public  bool ServerOwner;
-var private bool GroupMember;
+var private repnotify E_LogLevel  LogLevel;
+var private repnotify UniqueNetId GroupID;
+var private repnotify float       CheckGroupTimer;
+
+var private bool ObtainLogLevel;
+var private bool ObtainGroupID;
+var private bool ObtainCheckGroupTimer;
+
+var private KFPlayerController        KFPC;
+var private OnlineSubsystemSteamworks OSS;
 
 replication
 {
-	if (bNetInitial && Role == ROLE_Authority)
-		LogLevel, GroupID, CheckGroupTimer;
+	if (bNetInitial)
+		LogLevel, GroupID, CheckGroupTimer, ServerOwner;
+}
+
+public simulated event ReplicatedEvent(name VarName)
+{
+	`Log_Trace();
+	
+	switch (VarName)
+	{
+		case 'LogLevel':
+			ObtainLogLevel = true;
+			CheckGroupMembership();
+			break;
+			
+		case 'GroupID':
+			ObtainGroupID  = true;
+			CheckGroupMembership();
+			break;
+			
+		case 'CheckGroupTimer':
+			ObtainCheckGroupTimer  = true;
+			CheckGroupMembership();
+			break;
+		
+		default:
+			super.ReplicatedEvent(VarName);
+			break;
+	}
+}
+
+public function Init(
+	E_LogLevel  _LogLevel,
+	IMSKGS      _MSKGS,
+	UniqueNetId _GroupID,
+	float       _CheckGroupTimer,
+	bool        _ServerOwner)
+{
+	LogLevel        = _LogLevel;
+	MSKGS           = _MSKGS;
+	GroupID         = _GroupID;
+	CheckGroupTimer = _CheckGroupTimer;
+	ServerOwner     = _ServerOwner;
+	
+	`Log_Trace();
 }
 
 public simulated function bool SafeDestroy()
@@ -29,19 +85,6 @@ public simulated function bool SafeDestroy()
 public simulated event PreBeginPlay()
 {
 	`Log_Trace();
-	
-	if (Role < ROLE_Authority || WorldInfo.NetMode == NM_StandAlone)
-	{
-		OS = class'GameEngine'.static.GetOnlineSubsystem();
-		if (OS != None)
-		{
-			CheckGroupMembership();
-		}
-		else
-		{
-			`Log_Error("Can't get online subsystem!");
-		}
-	}
 	
 	Super.PreBeginPlay();
 }
@@ -57,46 +100,74 @@ public simulated event PostBeginPlay()
 
 private simulated function CheckGroupMembership()
 {
-	if (OS.CheckPlayerGroup(GroupID))
+	`Log_Trace();
+	
+	if (WorldInfo.NetMode == NM_StandAlone
+	|| (ObtainLogLevel && ObtainGroupID && ObtainCheckGroupTimer && Role < ROLE_Authority))
 	{
-		ClearTimer(nameof(CheckGroupMembership));
-		ServerApplyMembership();
-	}
-	else if (CheckGroupTimer > 0.0f && !IsTimerActive(nameof(CheckGroupMembership)))
-	{
-		SetTimer(CheckGroupTimer, true, nameof(CheckGroupMembership));
+		if (OSS == None)
+		{
+			OSS = OnlineSubsystemSteamworks(class'GameEngine'.static.GetOnlineSubsystem());
+		}
+		
+		if (OSS != None)
+		{
+			if (OSS.CheckPlayerGroup(GroupID))
+			{
+				ClearTimer(nameof(CheckGroupMembership));
+				GroupMember = true;
+				ServerApplyMembership();
+			}
+			else if (!IsTimerActive(nameof(CheckGroupMembership)) && CheckGroupTimer > 0.0f)
+			{
+				SetTimer(CheckGroupTimer, true, nameof(CheckGroupMembership));
+			}
+		}
+		else
+		{
+			`Log_Error("Can't get online subsystem steamworks!");
+		}
 	}
 }
 
-private reliable server function ServerApplyMembership()
-{
-	GroupMember = true;
-	MSKGS.IncreaseXPBoost(GetKFPC());
-}
-
-public function int XPBoost()
+public simulated function MSKGS_PlayerType PlayerType()
 {
 	`Log_Trace();
 	
-	if (ServerOwner)
+	if (IsServerOwner())
 	{
-		return CfgXPBoost.default.BoostOwner;
+		return MSKGS_Owner;
 	}
-	
-	if (GetKFPC() != None && GetKFPC().PlayerReplicationInfo != None && GetKFPC().PlayerReplicationInfo.bAdmin)
+		
+	if (IsAdmin())
 	{
-		return CfgXPBoost.default.BoostAdmin;
+		return MSKGS_Admin;
 	}
-	
-	if (GroupMember)
+		
+	if (IsGroupMember())
 	{
-		return CfgXPBoost.default.BoostGroup;
+		return MSKGS_Group;
 	}
-	
-	return CfgXPBoost.default.BoostPlayer;
+		
+	return MSKGS_Player;
 }
 
-private simulated function KFPlayerController GetKFPC()
+public simulated function bool IsServerOwner()
+{
+	return ServerOwner;
+}
+
+public simulated function bool IsAdmin()
+{
+	return (GetKFPC() != None && KFPC.PlayerReplicationInfo != None && KFPC.PlayerReplicationInfo.bAdmin);
+}
+
+public simulated function bool IsGroupMember()
+{
+	return GroupMember;
+}
+
+public simulated function KFPlayerController GetKFPC()
 {
 	`Log_Trace();
 	
@@ -112,6 +183,92 @@ private simulated function KFPlayerController GetKFPC()
 	return KFPC;
 }
 
+private reliable server function ServerApplyMembership()
+{
+	`Log_Trace();
+	
+	GroupMember = true;
+	MSKGS.IncreaseXPBoost(GetKFPC());
+}
+
+public reliable client function WriteToChatLocalized(E_MSKGS_LocalMessageType LMT, String HexColor, optional String String1, optional String String2, optional String String3)
+{
+	`Log_Trace();
+	
+	WriteToChat(MSKGS_LMT.static.GetLocalizedString(LogLevel, LMT, String1, String2, String3), HexColor);
+}
+
+public reliable client function WriteToChat(String Message, String HexColor)
+{
+	local KFGFxHudWrapper HUD;
+	
+	`Log_Trace();
+	
+	if (GetKFPC() == None) return;
+	
+	if (KFPC.MyGFxManager.PartyWidget != None && KFPC.MyGFxManager.PartyWidget.PartyChatWidget != None)
+	{
+		KFPC.MyGFxManager.PartyWidget.PartyChatWidget.AddChatMessage(Message, HexColor);
+	}
+
+	HUD = KFGFxHudWrapper(KFPC.myHUD);
+	if (HUD != None && HUD.HUDMovie != None && HUD.HUDMovie.HudChatBox != None)
+	{
+		HUD.HUDMovie.HudChatBox.AddChatMessage(Message, HexColor);
+	}
+}
+
+public reliable client function WriteToHUDLocalized(E_MSKGS_LocalMessageType LMT, optional String String1, optional String String2, optional String String3, optional float DisplayTime = 0.0f)
+{
+	`Log_Trace();
+	
+	WriteToHUD(MSKGS_LMT.static.GetLocalizedString(LogLevel, LMT, String1, String2, String3), DisplayTime);
+}
+
+public reliable client function WriteToHUD(String Message, optional float DisplayTime = 0.0f)
+{
+	`Log_Trace();
+	
+	if (GetKFPC() == None) return;
+	
+	if (DisplayTime <= 0.0f)
+	{
+		DisplayTime = CalcDisplayTime(Message);
+	}
+	
+	if (KFPC.MyGFxHUD != None)
+	{
+		KFPC.MyGFxHUD.DisplayMapText(Message, DisplayTime, false);
+	}
+}
+
+public reliable client function DefferedClearMessageHUD(optional float Time = 0.0f)
+{
+	`Log_Trace();
+	
+	SetTimer(Time, false, nameof(ClearMessageHUD));
+}
+
+public reliable client function ClearMessageHUD()
+{
+	`Log_Trace();
+	
+	if (GetKFPC() == None) return;
+	
+	if (KFPC.MyGFxHUD != None && KFPC.MyGFxHUD.MapTextWidget != None)
+	{
+		KFPC.MyGFxHUD.MapTextWidget.StoredMessageList.Length = 0;
+		KFPC.MyGFxHUD.MapTextWidget.HideMessage();
+	}
+}
+
+private simulated function float CalcDisplayTime(String Message)
+{
+	`Log_Trace();
+	
+	return FClamp(Len(Message) / 20.0f, 3, 30);
+}
+
 defaultproperties
 {
 	bAlwaysRelevant               = false
@@ -120,4 +277,8 @@ defaultproperties
 	
 	GroupMember = false;
 	ServerOwner = false;
+	
+	ObtainLogLevel        = false;
+	ObtainGroupID         = false;
+	ObtainCheckGroupTimer = false;
 }
