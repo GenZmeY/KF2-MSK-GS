@@ -1,4 +1,4 @@
-class Proxy_KFPawn_ZedDAR_Rocket_070 extends Proxy_KFPawn_ZedDAR_Rocket_070;
+class Proxy_KFPawn_ZedDAR_Rocket_070 extends KFPawn_ZedDAR_Rocket;
 
 defaultproperties
 {

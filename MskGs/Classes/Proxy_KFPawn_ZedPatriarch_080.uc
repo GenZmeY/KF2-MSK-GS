@@ -1,4 +1,4 @@
-class Proxy_KFPawn_ZedPatriarch_080 extends Proxy_KFPawn_ZedPatriarch_080;
+class Proxy_KFPawn_ZedPatriarch_080 extends KFPawn_ZedPatriarch;
 
 defaultproperties
 {

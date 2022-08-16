@@ -1,4 +1,4 @@
-class Proxy_KFPawn_ZedHusk_050 extends Proxy_KFPawn_ZedHusk_050;
+class Proxy_KFPawn_ZedHusk_050 extends KFPawn_ZedHusk;
 
 DefaultProperties
 {

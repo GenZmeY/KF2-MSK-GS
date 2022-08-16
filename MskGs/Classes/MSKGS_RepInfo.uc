@@ -1,78 +1,123 @@
-class MskGsRepInfo extends ReplicationInfo;
+class MSKGS_RepInfo extends ReplicationInfo;
 
-const GroupUIDStr = "0x017000000223386E";
-const MaxRetries  = 10;
-const TimerDelay  = 1.0f;
+const CfgXPBoost = class'CfgXPBoost';
 
-// Server vars
-var public MskGsMut Mut;
-var public Controller C;
-var private int ServerApplyMembershipRetries;
+var public E_LogLevel  LogLevel;
+var public MSKGS       MSKGS;
+var public UniqueNetId GroupID;
+var public float       CheckGroupTimer;
 
-// Client vars
-var private OnlineSubsystemSteamworks SW;
-var private int ClientGetOnlineSubsystemRetries;
+var private KFPlayerController KFPC;
+var private OnlineSubsystem    OS;
 
-simulated event PostBeginPlay()
+var public  bool ServerOwner;
+var private bool GroupMember;
+
+replication
 {
-    super.PostBeginPlay();
+	if (bNetInitial && Role == ROLE_Authority)
+		LogLevel, GroupID, CheckGroupTimer;
+}
 
-    if (bDeleteMe) return;
+public simulated function bool SafeDestroy()
+{
+	`Log_Trace();
+
+	return (bPendingDelete || bDeleteMe || Destroy());
+}
+
+public simulated event PreBeginPlay()
+{
+	`Log_Trace();
 	
 	if (Role < ROLE_Authority || WorldInfo.NetMode == NM_StandAlone)
 	{
-		ClientGetOnlineSubsystem();
+		OS = class'GameEngine'.static.GetOnlineSubsystem();
+		if (OS != None)
+		{
+			CheckGroupMembership();
+		}
+		else
+		{
+			`Log_Error("Can't get online subsystem!");
+		}
+	}
+	
+	Super.PreBeginPlay();
+}
+
+public simulated event PostBeginPlay()
+{
+	`Log_Trace();
+	
+	if (bPendingDelete || bDeleteMe) return;
+	
+	Super.PostBeginPlay();
+}
+
+private simulated function CheckGroupMembership()
+{
+	if (OS.CheckPlayerGroup(GroupID))
+	{
+		ClearTimer(nameof(CheckGroupMembership));
+		ServerApplyMembership();
+	}
+	else if (CheckGroupTimer > 0.0f && !IsTimerActive(nameof(CheckGroupMembership)))
+	{
+		SetTimer(CheckGroupTimer, true, nameof(CheckGroupMembership));
 	}
 }
 
-private reliable client function ClientGetOnlineSubsystem()
+private reliable server function ServerApplyMembership()
 {
-	if (SW == None)
-	{
-		SW = OnlineSubsystemSteamworks(class'GameEngine'.static.GetOnlineSubsystem());
-	}
-	
-	if (SW == None && ClientGetOnlineSubsystemRetries < MaxRetries)
-	{
-		ClientGetOnlineSubsystemRetries++;
-		SetTimer(TimerDelay, false, nameof(ClientGetOnlineSubsystem));
-	}
-	else
-	{
-		ClearTimer(nameof(ClientGetOnlineSubsystem));
-		if (SW != None) ClientGetMembership();
-	}
+	GroupMember = true;
+	MSKGS.IncreaseXPBoost(GetKFPC());
 }
 
-private reliable client function ClientGetMembership()
+public function int XPBoost()
 {
-	local UniqueNetId GroupID;
-	class'OnlineSubsystem'.Static.StringToUniqueNetId(GroupUIDStr, GroupID);
-	if (SW.CheckPlayerGroup(GroupID)) ServerApplyMembership();
-}
-
-private simulated reliable server function ServerApplyMembership()
-{
-	if ((Mut == None || C == None) && ServerApplyMembershipRetries < MaxRetries)
+	`Log_Trace();
+	
+	if (ServerOwner)
 	{
-		ServerApplyMembershipRetries++;
-		SetTimer(TimerDelay, false, nameof(ServerApplyMembership));
-		return;
+		return CfgXPBoost.default.BoostOwner;
 	}
 	
-	ClearTimer(nameof(ServerApplyMembership));
+	if (GetKFPC() != None && GetKFPC().PlayerReplicationInfo != None && GetKFPC().PlayerReplicationInfo.bAdmin)
+	{
+		return CfgXPBoost.default.BoostAdmin;
+	}
 	
-	if (Mut != None && C != None) Mut.AddMskGsMember(C);
+	if (GroupMember)
+	{
+		return CfgXPBoost.default.BoostGroup;
+	}
+	
+	return CfgXPBoost.default.BoostPlayer;
 }
 
-DefaultProperties
+private simulated function KFPlayerController GetKFPC()
 {
-	bAlwaysRelevant = false;
-	bOnlyRelevantToOwner = true;
-	Role = ROLE_Authority;
-	RemoteRole = ROLE_SimulatedProxy;
-	bSkipActorPropertyReplication = false;
+	`Log_Trace();
 	
-	ServerApplyMembershipRetries = 0
-	ClientGetOnlineSubsystemRetries = 0
+	if (KFPC != None) return KFPC;
+	
+	KFPC = KFPlayerController(Owner);
+	
+	if (KFPC == None && ROLE < ROLE_Authority)
+	{
+		KFPC = KFPlayerController(GetALocalPlayerController());
+	}
+	
+	return KFPC;
+}
+
+defaultproperties
+{
+	bAlwaysRelevant               = false
+	bOnlyRelevantToOwner          = true
+	bSkipActorPropertyReplication = false
+	
+	GroupMember = false;
+	ServerOwner = false;
 }

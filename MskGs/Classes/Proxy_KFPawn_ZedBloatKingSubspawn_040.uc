@@ -1,4 +1,4 @@
-class Proxy_KFPawn_ZedBloatKingSubspawn_040 extends Proxy_KFPawn_ZedBloatKingSubspawn_040;
+class Proxy_KFPawn_ZedBloatKingSubspawn_040 extends KFPawn_ZedBloatKingSubspawn;
 
 defaultproperties
 {

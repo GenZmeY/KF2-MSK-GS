@@ -1,4 +1,4 @@
-class Proxy_KFPawn_ZedClot_AlphaKing_080 extends Proxy_KFPawn_ZedClot_AlphaKing_080;
+class Proxy_KFPawn_ZedClot_AlphaKing_080 extends KFPawn_ZedClot_AlphaKing;
 
 defaultproperties
 {

@@ -1,4 +1,4 @@
-class Proxy_KFPawn_ZedSiren_080 extends Proxy_KFPawn_ZedSiren_080;
+class Proxy_KFPawn_ZedSiren_080 extends KFPawn_ZedSiren;
 
 defaultproperties
 {

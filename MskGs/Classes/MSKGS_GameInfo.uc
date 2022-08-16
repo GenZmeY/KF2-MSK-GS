@@ -1,6 +1,9 @@
 class MSKGS_GameInfo extends Object;
 
-public static function UpdateGameSettings(KFGameInfo_Survival KFGI, string GameModeClass, MSKGS_Mut Mut)
+const CfgXPBoost = class'CfgXPBoost';
+const CfgSrvRank = class'CfgSrvRank';
+
+public static function UpdateGameSettings(KFGameInfo_Survival KFGI, string GameModeClass, MSKGS MSKGS)
 {
 	local name SessionName;
 	local KFOnlineGameSettings KFGameSettings;
@@ -45,31 +48,31 @@ public static function UpdateGameSettings(KFGameInfo_Survival KFGI, string GameM
 				if (KFGI.MyKFGRI != None)
 				{
 					KFGameSettings.NumWaves = KFGI.MyKFGRI.GetFinalWaveNum();
-					KFGI.MyKFGRI.bCustom = False;
+					KFGI.MyKFGRI.bCustom = CfgSrvRank.default.bCustom;
 				}
 				else
 				{
 					KFGameSettings.NumWaves = KFGI.WaveMax - 1;
 				}
 				
-				if (Mut == None || !Mut.bXpNotifications || Mut.MskGsMemberList.Length == 0)
+				if (MSKGS == None || !MSKGS.XPNotifications || MSKGS.XPBoost <= 0)
 				{
 					KFGameSettings.OwningPlayerName = class'GameReplicationInfo'.default.ServerName;
 				}
-				else if (Mut.MskGsMemberList.Length > 10)
+				else if (MSKGS.XPBoost >= CfgXPBoost.default.MaxBoost)
 				{
-					KFGameSettings.OwningPlayerName = class'GameReplicationInfo'.default.ServerName $ " | +100% XP";
+					KFGameSettings.OwningPlayerName = class'GameReplicationInfo'.default.ServerName $ " | +" $ CfgXPBoost.default.MaxBoost $ "% XP";
 				}
 				else
 				{
-					KFGameSettings.OwningPlayerName = class'GameReplicationInfo'.default.ServerName $ " | +" $ (Mut.MskGsMemberList.Length * 10) $ "% XP";
+					KFGameSettings.OwningPlayerName = class'GameReplicationInfo'.default.ServerName $ " | +" $ MSKGS.XPBoost $ "% XP";
 				}
 
 				KFGameSettings.NumPublicConnections = KFGI.MaxPlayersAllowed;
-				KFGameSettings.bRequiresPassword = KFGI.RequiresPassword();
-				KFGameSettings.bCustom    = false;
-				KFGameSettings.bUsesStats = true;
-				KFGameSettings.NumSpectators = KFGI.NumSpectators;
+				KFGameSettings.bRequiresPassword    = KFGI.RequiresPassword();
+				KFGameSettings.bCustom              = CfgSrvRank.default.bCustom;
+				KFGameSettings.bUsesStats           = CfgSrvRank.default.bUsesStats;
+				KFGameSettings.NumSpectators        = KFGI.NumSpectators;
 				
 				if (KFGI.WorldInfo.IsConsoleDedicatedServer() || KFGI.WorldInfo.IsEOSDedicatedServer())
 				{
@@ -102,18 +105,15 @@ public static function UpdateGameSettings(KFGameInfo_Survival KFGI, string GameM
 	}
 }
 
-public static function class<KFPawn_Monster> PickProxyZed(class<KFPawn_Monster> MonsterClass, MSKGS_Mut Mut)
+public static function class<KFPawn_Monster> PickProxyZed(class<KFPawn_Monster> MonsterClass, MSKGS MSKGS)
 {
 	local String SMC;
 	local Name NMC;
-	local int Boost;
 	
 	SMC = String(MonsterClass);
 	NMC = Name(SMC);
 	
-	Boost = (Mut == None) ? 0 : Mut.MskGsMemberList.Length;
-	
-	switch (Boost)
+	switch (MSKGS.XPBoost)
 	{
 		case 0:   return MonsterClass;
 		case 10:  return PickProxyZed010(NMC, MonsterClass);

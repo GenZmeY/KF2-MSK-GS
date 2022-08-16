@@ -1,4 +1,4 @@
-class Proxy_KFPawn_ZedFleshpound_090 extends Proxy_KFPawn_ZedFleshpound_090;
+class Proxy_KFPawn_ZedFleshpound_090 extends KFPawn_ZedFleshpound;
 
 DefaultProperties
 {

@@ -1,4 +1,4 @@
-class Proxy_KFPawn_ZedGorefast_010 extends Proxy_KFPawn_ZedGorefast_010;
+class Proxy_KFPawn_ZedGorefast_010 extends KFPawn_ZedGorefast;
 
 DefaultProperties
 {

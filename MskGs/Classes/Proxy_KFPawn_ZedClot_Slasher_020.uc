@@ -1,4 +1,4 @@
-class Proxy_KFPawn_ZedClot_Slasher_020 extends Proxy_KFPawn_ZedClot_Slasher_020;
+class Proxy_KFPawn_ZedClot_Slasher_020 extends KFPawn_ZedClot_Slasher;
 
 DefaultProperties
 {

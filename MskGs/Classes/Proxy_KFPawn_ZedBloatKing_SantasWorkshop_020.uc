@@ -1,4 +1,4 @@
-class Proxy_KFPawn_ZedBloatKing_SantasWorkshop_020 extends Proxy_KFPawn_ZedBloatKing_SantasWorkshop_020;
+class Proxy_KFPawn_ZedBloatKing_SantasWorkshop_020 extends KFPawn_ZedBloatKing_SantasWorkshop;
 
 defaultproperties
 {

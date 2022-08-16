@@ -1,4 +1,4 @@
-class Proxy_KFPawn_ZedCrawlerKing_030 extends Proxy_KFPawn_ZedCrawlerKing_030;
+class Proxy_KFPawn_ZedCrawlerKing_030 extends KFPawn_ZedCrawlerKing;
 
 defaultproperties
 {

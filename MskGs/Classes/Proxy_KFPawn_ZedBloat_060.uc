@@ -1,4 +1,4 @@
-class Proxy_KFPawn_ZedBloat_060 extends Proxy_KFPawn_ZedBloat_060;
+class Proxy_KFPawn_ZedBloat_060 extends KFPawn_ZedBloat;
 
 DefaultProperties
 {

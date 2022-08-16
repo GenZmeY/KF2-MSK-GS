@@ -1,4 +1,4 @@
-class Proxy_KFPawn_ZedScrake_050 extends Proxy_KFPawn_ZedScrake_050;
+class Proxy_KFPawn_ZedScrake_050 extends KFPawn_ZedScrake;
 
 defaultproperties
 {

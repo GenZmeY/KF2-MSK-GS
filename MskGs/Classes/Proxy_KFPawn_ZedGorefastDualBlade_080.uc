@@ -1,4 +1,4 @@
-class Proxy_KFPawn_ZedGorefastDualBlade_080 extends Proxy_KFPawn_ZedGorefastDualBlade_080;
+class Proxy_KFPawn_ZedGorefastDualBlade_080 extends KFPawn_ZedGorefastDualBlade;
 
 defaultproperties
 {

@@ -1,4 +1,4 @@
-class Proxy_KFPawn_ZedStalker_040 extends Proxy_KFPawn_ZedStalker_040;
+class Proxy_KFPawn_ZedStalker_040 extends KFPawn_ZedStalker;
 
 DefaultProperties
 {

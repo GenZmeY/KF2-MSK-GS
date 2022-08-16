@@ -1,4 +1,4 @@
-class Proxy_KFPawn_ZedDAR_EMP_050 extends Proxy_KFPawn_ZedDAR_EMP_050;
+class Proxy_KFPawn_ZedDAR_EMP_050 extends KFPawn_ZedDAR_EMP;
 
 defaultproperties
 {

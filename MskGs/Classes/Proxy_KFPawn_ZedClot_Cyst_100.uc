@@ -1,4 +1,4 @@
-class Proxy_KFPawn_ZedClot_Cyst_100 extends Proxy_KFPawn_ZedClot_Cyst_100;
+class Proxy_KFPawn_ZedClot_Cyst_100 extends KFPawn_ZedClot_Cyst;
 
 defaultproperties
 {

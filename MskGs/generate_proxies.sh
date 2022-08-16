@@ -43,7 +43,7 @@ function main ()
 			TmpZed="$TmpDir/$ProxyZed.uc"
 			echo "$ProxyZed"
 			cp "$PawnsDir/$Zed.uc" "$TmpZed"
-			sed -i "s|$Zed|$ProxyZed|g" "$TmpZed"
+			sed -i -r "s|class.+extends (.+);|class $ProxyZed extends \1;|g" "$TmpZed"
 			grep -Po 'XPValues\(\d\)=(\d+)' "$TmpZed" | \
 			while read XPValue
 			do

@@ -1,4 +1,4 @@
-class Proxy_KFPawn_ZedDAR_100 extends Proxy_KFPawn_ZedDAR_100;
+class Proxy_KFPawn_ZedDAR_100 extends KFPawn_ZedDAR;
 
 defaultproperties
 {

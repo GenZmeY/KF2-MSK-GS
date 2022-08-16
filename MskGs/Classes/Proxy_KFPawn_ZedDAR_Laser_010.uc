@@ -1,4 +1,4 @@
-class Proxy_KFPawn_ZedDAR_Laser_010 extends Proxy_KFPawn_ZedDAR_Laser_010;
+class Proxy_KFPawn_ZedDAR_Laser_010 extends KFPawn_ZedDAR_Laser;
 
 defaultproperties
 {

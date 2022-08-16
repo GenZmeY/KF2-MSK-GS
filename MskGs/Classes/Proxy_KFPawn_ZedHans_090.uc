@@ -1,4 +1,4 @@
-class Proxy_KFPawn_ZedHans_090 extends Proxy_KFPawn_ZedHans_090;
+class Proxy_KFPawn_ZedHans_090 extends KFPawn_ZedHans;
 
 DefaultProperties
 {
