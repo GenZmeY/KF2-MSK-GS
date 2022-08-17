@@ -106,7 +106,7 @@ defaultproperties
 {
 	PlayerGivesBoostFirstDefault = "<player> gives boost to this server!"
 	PlayerGivesBoostDefault      = "<player> gives +<playerboost>% XP boost to this server!"
-	TotalBoostDefault            = "XP boost: +<totalboost>%"
+	TotalBoostDefault            = "Total XP boost: +<totalboost>%"
 	MaxDefault                   = "(MAX)"
 	PlayerLeftDefault            = "<player> left the server."
 	NoBoostDefault               = "Now there is no XP boost."

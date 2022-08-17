@@ -5,10 +5,10 @@ const MSKGS_LMT = class'MSKGS_LocalMessage';
 enum MSKGS_PlayerType
 {
 	MSKGS_Unknown,
-	MSKGS_Owner,
-	MSKGS_Admin,
+	MSKGS_Player,
 	MSKGS_Group,
-	MSKGS_Player
+	MSKGS_Admin,
+	MSKGS_Owner
 };
 
 var private IMSKGS MSKGS;
@@ -105,6 +105,12 @@ private simulated function CheckGroupMembership()
 	if (WorldInfo.NetMode == NM_StandAlone
 	|| (ObtainLogLevel && ObtainGroupID && ObtainCheckGroupTimer && Role < ROLE_Authority))
 	{
+		if (GetKFPC() != None && KFPC.bIsEosPlayer)
+		{
+			`Log_Debug("EGS Player, skip group check");
+			return;
+		}
+		
 		if (OSS == None)
 		{
 			OSS = OnlineSubsystemSteamworks(class'GameEngine'.static.GetOnlineSubsystem());
@@ -188,7 +194,12 @@ private reliable server function ServerApplyMembership()
 	`Log_Trace();
 	
 	GroupMember = true;
-	MSKGS.IncreaseXPBoost(GetKFPC());
+	
+	if (PlayerType() <= MSKGS_Group)
+	{
+		`Log_Info("Increase boost:" @ PlayerType());
+		MSKGS.IncreaseXPBoost(GetKFPC());
+	}
 }
 
 public reliable client function WriteToChatLocalized(E_MSKGS_LocalMessageType LMT, String HexColor, optional String String1, optional String String2, optional String String3)

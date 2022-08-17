@@ -4,7 +4,12 @@ class MSKGS_GameInfo extends Object
 const CfgXPBoost = class'CfgXPBoost';
 const CfgSrvRank = class'CfgSrvRank';
 
-public static function UpdateGameSettings(KFGameInfo_Survival KFGI, string GameModeClass, IMSKGS MSKGS)
+public static function UpdateGameSettings(
+KFGameInfo_Survival KFGI,
+String GameModeClass,
+IMSKGS MSKGS,
+bool bCustomGame,
+bool bUsesStats)
 {
 	local name SessionName;
 	local KFOnlineGameSettings KFGameSettings;
@@ -55,7 +60,14 @@ public static function UpdateGameSettings(KFGameInfo_Survival KFGI, string GameM
 				if (KFGI.MyKFGRI != None)
 				{
 					KFGameSettings.NumWaves = KFGI.MyKFGRI.GetFinalWaveNum();
-					KFGI.MyKFGRI.bCustom = CfgSrvRank.default.bCustom;
+					if (CfgSrvRank.default.bAuto)
+					{
+						KFGI.MyKFGRI.bCustom = bCustomGame;
+					}
+					else
+					{
+						KFGI.MyKFGRI.bCustom = CfgSrvRank.default.bCustom;
+					}
 				}
 				else
 				{
@@ -77,9 +89,17 @@ public static function UpdateGameSettings(KFGameInfo_Survival KFGI, string GameM
 
 				KFGameSettings.NumPublicConnections = KFGI.MaxPlayersAllowed;
 				KFGameSettings.bRequiresPassword    = KFGI.RequiresPassword();
-				KFGameSettings.bCustom              = CfgSrvRank.default.bCustom;
-				KFGameSettings.bUsesStats           = CfgSrvRank.default.bUsesStats;
 				KFGameSettings.NumSpectators        = KFGI.NumSpectators;
+				if (CfgSrvRank.default.bAuto)
+				{
+					KFGameSettings.bCustom          = bCustomGame;
+					KFGameSettings.bUsesStats       = bUsesStats;
+				}
+				else
+				{
+					KFGameSettings.bCustom          = CfgSrvRank.default.bCustom;
+					KFGameSettings.bUsesStats       = CfgSrvRank.default.bUsesStats;
+				}
 				
 				if (KFGI.WorldInfo.IsConsoleDedicatedServer() || KFGI.WorldInfo.IsEOSDedicatedServer())
 				{
