@@ -1,7 +1,3 @@
-# KF2-MSK-GS
-Mut list:
-+ FriendlyHUD (workshop);  
-+ TAWOD (workshop);  
-+ DefNextMap (workshop or custom);  
-+ DLC for group members (custom);
-+ No anonymous voting (custom).
+# KF2-MSKGS
+
+**Copyright (C) 2021-2022 GenZmeY**
