@@ -32,5 +32,5 @@ protected function DistributeMoneyAndXP(class<KFPawn_Monster> MonsterClass, cons
 
 defaultproperties
 {
-	
+	KFGFxManagerClass = class'MSKGS_GFxMoviePlayer_Manager'
 }

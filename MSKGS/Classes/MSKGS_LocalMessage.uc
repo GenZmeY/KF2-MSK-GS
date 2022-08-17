@@ -7,7 +7,11 @@ enum E_MSKGS_LocalMessageType
 	MSKGS_PlayerGiveBoostToServerMax,
 	MSKGS_BoosterLeaveServer,
 	MSKGS_BoosterLeaveServerMax,
-	MSKGS_BoosterLeaveServerNoBoost
+	MSKGS_BoosterLeaveServerNoBoost,
+	
+	MSKGS_AllowedLevels,
+	MSKGS_UnsuitablePerksLocked,
+	MSKGS_NoPerksDisconnect
 };
 
 var const             String PlayerGivesBoostDefault;
@@ -23,6 +27,13 @@ var private localized String PlayerLeft;
 var const             String NoBoostDefault;
 var private localized String NoBoost;
 
+var const             String AllowedLevelsDefault;
+var private localized String AllowedLevels;
+var const             String UnsuitablePerksLockedDefault;
+var private localized String UnsuitablePerksLocked;
+var const             String NoPerksDisconnectDefault;
+var private localized String NoPerksDisconnect;
+
 private static function String ReplPlayer(String Str, String Player)
 {
 	return Repl(Str, "<player>", Player, false);
@@ -36,6 +47,21 @@ private static function String ReplPlayerBoost(String Str, String Boost)
 private static function String ReplTotalBoost(String Str, String Boost)
 {
 	return Repl(Str, "<totalboost>", Boost, false);
+}
+
+private static function String ReplMinLevel(String Str, String MinLevel)
+{
+	return Repl(Str, "<minlevel>", MinLevel, false);
+}
+
+private static function String ReplMaxLevel(String Str, String MaxLevel)
+{
+	return Repl(Str, "<maxlevel>", MaxLevel, false);
+}
+
+private static function String ReplDisconnectTime(String Str, String DisconnectTime)
+{
+	return Repl(Str, "<disconnecttime>", DisconnectTime, false);
 }
 
 public static function String GetLocalizedString(
@@ -97,6 +123,21 @@ public static function String GetLocalizedString(
 			   @ (default.NoBoost != "" ? default.NoBoost : default.NoBoostDefault);
 			RV = ReplPlayer(RV, String1);
 			break;
+			
+		case MSKGS_AllowedLevels:
+			RV = (default.AllowedLevels != "" ? default.AllowedLevels : default.AllowedLevelsDefault);
+			RV = ReplMinLevel(RV, String1);
+			RV = ReplMaxLevel(RV, String2);
+			break;
+			
+		case MSKGS_UnsuitablePerksLocked:
+			RV = (default.UnsuitablePerksLocked != "" ? default.UnsuitablePerksLocked : default.UnsuitablePerksLockedDefault);
+			break;
+			
+		case MSKGS_NoPerksDisconnect:
+			RV = (default.NoPerksDisconnect != "" ? default.NoPerksDisconnect : default.NoPerksDisconnectDefault);
+			RV = ReplDisconnectTime(RV, String1);
+			break;
 	}
 	
 	return RV;
@@ -110,4 +151,8 @@ defaultproperties
 	MaxDefault                   = "(MAX)"
 	PlayerLeftDefault            = "<player> left the server."
 	NoBoostDefault               = "Now there is no XP boost."
+	
+	AllowedLevelsDefault         = "Allowed levels: <minlevel> - <maxlevel>"
+	UnsuitablePerksLockedDefault = "Perks with unsuitable level are locked"
+	NoPerksDisconnectDefault     = "You don't have perks with required level. Disconnect after <disconnecttime> seconds..."
 }

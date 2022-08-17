@@ -14,6 +14,7 @@ enum MSKGS_PlayerType
 var private IMSKGS MSKGS;
 var private bool   ServerOwner;
 var private bool   GroupMember;
+var private bool   Admin;
 
 var private repnotify E_LogLevel  LogLevel;
 var private repnotify UniqueNetId GroupID;
@@ -165,7 +166,12 @@ public simulated function bool IsServerOwner()
 
 public simulated function bool IsAdmin()
 {
-	return (GetKFPC() != None && KFPC.PlayerReplicationInfo != None && KFPC.PlayerReplicationInfo.bAdmin);
+	if (!Admin)
+	{
+		Admin = (GetKFPC() != None && KFPC.PlayerReplicationInfo != None && KFPC.PlayerReplicationInfo.bAdmin);
+	}
+	
+	return Admin;
 }
 
 public simulated function bool IsGroupMember()

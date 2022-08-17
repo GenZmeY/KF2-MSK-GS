@@ -10,6 +10,9 @@ const CfgSpawnManager = class'CfgSpawnManager';
 const CfgXPBoost      = class'CfgXPBoost';
 const CfgSrvRank      = class'CfgSrvRank';
 
+const CfgPerks        = class'CfgPerks';
+const CfgLevels       = class'CfgLevels';
+
 const MSKGS_GameInfo  = class'MSKGS_GameInfo';
 
 struct ZedMap
@@ -91,7 +94,9 @@ private function PreInit()
 	CfgSpawnManager.static.InitConfig(Version, LatestVersion, LogLevel);
 	CfgXPBoost.static.InitConfig(Version, LatestVersion, LogLevel);
 	CfgSrvRank.static.InitConfig(Version, LatestVersion, LogLevel);
-
+	CfgPerks.static.InitConfig(Version, LatestVersion, LogLevel);
+	CfgLevels.static.InitConfig(Version, LatestVersion, LogLevel);
+	
 	switch (Version)
 	{
 		case `NO_CONFIG:
@@ -132,6 +137,8 @@ private function PreInit()
 	CfgXPBoost.static.Load(LogLevel);
 	CfgSrvRank.static.Load(LogLevel);
 	
+	CfgLevels.static.Load(LogLevel);
+	
 	OS = class'GameEngine'.static.GetOnlineSubsystem();
 	if (OS == None)
 	{
@@ -154,6 +161,8 @@ private function PostInit()
 		return;
 	}
 	
+	WorldInfo.Game.PlayerControllerClass = class'MSKGS_PlayerController';
+	
 	KFGI = KFGameInfo(WorldInfo.Game);
 	if (KFGI == None)
 	{
@@ -168,14 +177,7 @@ private function PostInit()
 		return;
 	}
 	
-	KFGRI = KFGameReplicationInfo(KFGI.GameReplicationInfo);
-	if (KFGRI == None)
-	{
-		`Log_Fatal("Incompatible Replication info:" @ KFGI.GameReplicationInfo);
-		SafeDestroy();
-		return;
-	}
-	
+	XPNotifications = false;
 	if (MSKGS_Endless(KFGI) != None)
 	{
 		XPNotifications = true;
@@ -185,21 +187,21 @@ private function PostInit()
 	}
 	else if (MSKGS_Objective(KFGI) != None)
 	{
-		XPNotifications = (KFGI.GameDifficulty != 3);
+		XPNotifications = true;
 		MSKGS_Objective(KFGI).MSKGS    = Self;
 		MSKGS_Objective(KFGI).GI       = new MSKGS_GameInfo;
 		MSKGS_Objective(KFGI).LogLevel = LogLevel;
 	}
 	else if (MSKGS_Survival(KFGI) != None)
 	{
-		XPNotifications = (KFGI.GameDifficulty != 3);
+		XPNotifications = true;
 		MSKGS_Survival(KFGI).MSKGS    = Self;
 		MSKGS_Survival(KFGI).GI       = new MSKGS_GameInfo;
 		MSKGS_Survival(KFGI).LogLevel = LogLevel;
 	}
 	else if (MSKGS_VersusSurvival(KFGI) != None)
 	{
-		XPNotifications = false;
+		XPNotifications = true;
 		MSKGS_VersusSurvival(KFGI).MSKGS    = Self;
 		MSKGS_VersusSurvival(KFGI).GI       = new MSKGS_GameInfo;
 		MSKGS_VersusSurvival(KFGI).LogLevel = LogLevel;
@@ -212,9 +214,19 @@ private function PostInit()
 		MSKGS_WeeklySurvival(KFGI).LogLevel = LogLevel;
 	}
 	
+	KFGI.UpdateGameSettings();
+	
 	`Log_Info("GameInfo initialized:" @ KFGI);
 	
-	KFGI.UpdateGameSettings();
+	KFGRI = KFGameReplicationInfo(KFGI.GameReplicationInfo);
+	if (KFGRI == None)
+	{
+		`Log_Fatal("Incompatible Replication info:" @ KFGI.GameReplicationInfo);
+		SafeDestroy();
+		return;
+	}
+	
+	KFGRI.PerksAvailableData = CfgPerks.static.Load(LogLevel);
 	
 	ModifySpawnManager();
 	
@@ -313,9 +325,23 @@ public function SetMaxPlayers(int MaxPlayers)
 
 public function NotifyLogin(Controller C)
 {
+	local MSKGS_PlayerController MSKGSPC;
 	local MSKGS_RepInfo RepInfo;
 	
 	`Log_Trace();
+	
+	MSKGSPC = MSKGS_PlayerController(C);
+	
+	if (MSKGSPC == None)
+	{
+		`Log_Error("Can't cast" @ C @ "to MSKGS_PlayerController");
+		return;
+	}
+	
+	if (CfgPerks.default.bHideDisabledPerks)
+	{
+		MSKGSPC.ServerHidePerks();
+	}
 
 	RepInfo = CreateRepInfo(C);
 	if (RepInfo == None)
@@ -324,11 +350,22 @@ public function NotifyLogin(Controller C)
 		return;
 	}
 	
+	MSKGSPC.RepInfo         = RepInfo;
+	MSKGSPC.MinLevel        = CfgLevels.static.MinLevel();
+	MSKGSPC.MaxLevel        = CfgLevels.static.MaxLevel();
+	MSKGSPC.DisconnectTimer = CfgLevels.default.DisconnectTime;
+	
 	if (RepInfo.PlayerType() >= MSKGS_Admin)
 	{
 		`Log_Info("Increase boost:" @ RepInfo.PlayerType());
 		IncreaseXPBoost(RepInfo.GetKFPC());
 	}
+	
+	RepInfo.WriteToChatLocalized(
+		MSKGS_AllowedLevels,
+		CfgLevels.default.HexColorInfo,
+		String(CfgLevels.static.MinLevel()),
+		String(CfgLevels.static.MaxLevel()));
 }
 
 public function NotifyLogout(Controller C)
@@ -556,6 +593,8 @@ public function UpdateXPBoost(optional Controller Except = None)
 private function int PlayerXPBoost(MSKGS_RepInfo RepInfo)
 {
 	`Log_Trace();
+	
+	`Log_Debug("PlayerType:" @ RepInfo.PlayerType());
 	
 	if (RepInfo != None) switch (RepInfo.PlayerType())
 	{
