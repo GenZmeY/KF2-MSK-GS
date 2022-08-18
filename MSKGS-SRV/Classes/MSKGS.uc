@@ -455,34 +455,37 @@ public function IncreaseXPBoost(KFPlayerController Booster)
 	PlayerBoost    = PlayerXPBoost(BoosterRepInfo);
 	PlayerBoostStr = String(PlayerBoost);
 	
-	if (XPBoost >= CfgXPBoost.default.MaxBoost)
+	if (XPNotifications)
 	{
-		BroadcastChatLocalized(
-			MSKGS_PlayerGiveBoostToServerMax,
-			HexColor,
-			None,
-			BoosterName,
-			PlayerBoostStr,
-			String(CfgXPBoost.default.MaxBoost));
-	}
-	else if (PlayerBoost == XPBoost)
-	{
-		BroadcastChatLocalized(
-			MSKGS_PlayerGiveBoostToServerFirst,
-			HexColor,
-			None,
-			BoosterName,
-			TotalBoostStr);
-	}
-	else
-	{
-		BroadcastChatLocalized(
-			MSKGS_PlayerGiveBoostToServer,
-			HexColor,
-			None,
-			BoosterName,
-			PlayerBoostStr,
-			TotalBoostStr);
+		if (XPBoost >= CfgXPBoost.default.MaxBoost)
+		{
+			BroadcastChatLocalized(
+				MSKGS_PlayerGiveBoostToServerMax,
+				HexColor,
+				None,
+				BoosterName,
+				PlayerBoostStr,
+				String(CfgXPBoost.default.MaxBoost));
+		}
+		else if (PlayerBoost == XPBoost)
+		{
+			BroadcastChatLocalized(
+				MSKGS_PlayerGiveBoostToServerFirst,
+				HexColor,
+				None,
+				BoosterName,
+				TotalBoostStr);
+		}
+		else
+		{
+			BroadcastChatLocalized(
+				MSKGS_PlayerGiveBoostToServer,
+				HexColor,
+				None,
+				BoosterName,
+				PlayerBoostStr,
+				TotalBoostStr);
+		}
 	}
 }
 
@@ -501,31 +504,34 @@ public function DecreaseXPBoost(Controller Booster)
 	BoosterName = Booster.PlayerReplicationInfo.PlayerName;
 	TotalBoost  = String(XPBoost);
 	
-	if (XPBoost >= CfgXPBoost.default.MaxBoost)
+	if (XPNotifications)
 	{
-		BroadcastChatLocalized(
-			MSKGS_BoosterLeaveServerMax,
-			HexColor,
-			Booster,
-			BoosterName,
-			String(CfgXPBoost.default.MaxBoost));
-	}
-	else if (XPBoost > 0)
-	{
-		BroadcastChatLocalized(
-			MSKGS_BoosterLeaveServer,
-			HexColor,
-			Booster,
-			BoosterName,
-			TotalBoost);
-	}
-	else
-	{
-		BroadcastChatLocalized(
-			MSKGS_BoosterLeaveServerNoBoost,
-			HexColor,
-			Booster,
-			BoosterName);
+		if (XPBoost >= CfgXPBoost.default.MaxBoost)
+		{
+			BroadcastChatLocalized(
+				MSKGS_BoosterLeaveServerMax,
+				HexColor,
+				Booster,
+				BoosterName,
+				String(CfgXPBoost.default.MaxBoost));
+		}
+		else if (XPBoost > 0)
+		{
+			BroadcastChatLocalized(
+				MSKGS_BoosterLeaveServer,
+				HexColor,
+				Booster,
+				BoosterName,
+				TotalBoost);
+		}
+		else
+		{
+			BroadcastChatLocalized(
+				MSKGS_BoosterLeaveServerNoBoost,
+				HexColor,
+				Booster,
+				BoosterName);
+		}
 	}
 }
 
