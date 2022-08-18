@@ -361,11 +361,14 @@ public function NotifyLogin(Controller C)
 		IncreaseXPBoost(RepInfo.GetKFPC());
 	}
 	
-	RepInfo.WriteToChatLocalized(
-		MSKGS_AllowedLevels,
-		CfgLevels.default.HexColorInfo,
-		String(CfgLevels.static.MinLevel()),
-		String(CfgLevels.static.MaxLevel()));
+	if (CfgLevels.static.MinLevel() != 0 || CfgLevels.static.MaxLevel() != `MAX_PERK_LEVEL)
+	{
+		RepInfo.WriteToChatLocalized(
+			MSKGS_AllowedLevels,
+			CfgLevels.default.HexColorInfo,
+			String(CfgLevels.static.MinLevel()),
+			String(CfgLevels.static.MaxLevel()));
+	}
 }
 
 public function NotifyLogout(Controller C)

@@ -72,7 +72,7 @@ public static function Load(E_LogLevel LogLevel)
 	if (default.CheckGroupTimer < 0)
 	{
 		`Log_Error("CheckGroupTimer" @ "(" $ default.CheckGroupTimer $ ")" @ "must be equal or greater than 0");
-		default.CheckGroupTimer = 10;
+		default.CheckGroupTimer = 0;
 	}
 	
 	if (!IsValidHexColor(default.HexColorOwner, LogLevel))
@@ -118,7 +118,7 @@ private static function ApplyDefault(E_LogLevel LogLevel)
 	default.HexColorPlayer = "FFFFFF";
 	default.HexColorLeave  = "FF0000";
 	
-	default.CheckGroupTimer = 10;
+	default.CheckGroupTimer = 0;
 }
 
 private static function bool IsValidHexColor(String HexColor, E_LogLevel LogLevel)
