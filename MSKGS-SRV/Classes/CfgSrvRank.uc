@@ -2,9 +2,10 @@ class CfgSrvRank extends Object
 	config(MSKGS)
 	abstract;
 
-var public config bool bAuto;
-var public config bool bCustom;
-var public config bool bUsesStats;
+var public config bool   bAuto;
+var public config bool   bCustom;
+var public config bool   bUsesStats;
+var public config String PasswdText;
 
 public static function InitConfig(int Version, int LatestVersion, E_LogLevel LogLevel)
 {

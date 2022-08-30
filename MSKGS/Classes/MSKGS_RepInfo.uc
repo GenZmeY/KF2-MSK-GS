@@ -19,10 +19,13 @@ var private bool   Admin;
 var private repnotify E_LogLevel  LogLevel;
 var private repnotify UniqueNetId GroupID;
 var private repnotify float       CheckGroupTimer;
+var private repnotify int         MaxRetries;
+var private int                   Retries;
 
 var private bool ObtainLogLevel;
 var private bool ObtainGroupID;
 var private bool ObtainCheckGroupTimer;
+var private bool ObtainMaxRetries;
 
 var private KFPlayerController        KFPC;
 var private OnlineSubsystemSteamworks OSS;
@@ -30,7 +33,7 @@ var private OnlineSubsystemSteamworks OSS;
 replication
 {
 	if (bNetInitial)
-		LogLevel, GroupID, CheckGroupTimer, ServerOwner;
+		LogLevel, GroupID, CheckGroupTimer, MaxRetries, ServerOwner;
 }
 
 public simulated event ReplicatedEvent(name VarName)
@@ -45,12 +48,17 @@ public simulated event ReplicatedEvent(name VarName)
 			break;
 			
 		case 'GroupID':
-			ObtainGroupID  = true;
+			ObtainGroupID = true;
 			CheckGroupMembership();
 			break;
 			
 		case 'CheckGroupTimer':
-			ObtainCheckGroupTimer  = true;
+			ObtainCheckGroupTimer = true;
+			CheckGroupMembership();
+			break;
+			
+		case 'MaxRetries':
+			ObtainMaxRetries = true;
 			CheckGroupMembership();
 			break;
 		
@@ -65,12 +73,14 @@ public function Init(
 	IMSKGS      _MSKGS,
 	UniqueNetId _GroupID,
 	float       _CheckGroupTimer,
+	float       _MaxRetries,
 	bool        _ServerOwner)
 {
 	LogLevel        = _LogLevel;
 	MSKGS           = _MSKGS;
 	GroupID         = _GroupID;
 	CheckGroupTimer = _CheckGroupTimer;
+	MaxRetries      = _MaxRetries;
 	ServerOwner     = _ServerOwner;
 	
 	`Log_Trace();
@@ -104,11 +114,19 @@ private simulated function CheckGroupMembership()
 	`Log_Trace();
 	
 	if (WorldInfo.NetMode == NM_StandAlone
-	|| (ObtainLogLevel && ObtainGroupID && ObtainCheckGroupTimer && Role < ROLE_Authority))
+	|| (ObtainLogLevel && ObtainGroupID && ObtainCheckGroupTimer && ObtainMaxRetries && Role < ROLE_Authority))
 	{
 		if (GetKFPC() != None && KFPC.bIsEosPlayer)
 		{
 			`Log_Debug("EGS Player, skip group check");
+			ClearTimer(nameof(CheckGroupMembership));
+			return;
+		}
+		
+		if (Retries++ >= MaxRetries)
+		{
+			`Log_Info("Stop checking group membership due to MaxRetries");
+			ClearTimer(nameof(CheckGroupMembership));
 			return;
 		}
 		
@@ -121,6 +139,7 @@ private simulated function CheckGroupMembership()
 		{
 			if (OSS.CheckPlayerGroup(GroupID))
 			{
+				`Log_Info("Obtain membership (retries:" @ Retries $ "), notify server");
 				ClearTimer(nameof(CheckGroupMembership));
 				GroupMember = true;
 				ServerApplyMembership();
@@ -298,4 +317,7 @@ defaultproperties
 	ObtainLogLevel        = false;
 	ObtainGroupID         = false;
 	ObtainCheckGroupTimer = false;
+	ObtainMaxRetries      = false;
+	
+	Retries = 0
 }

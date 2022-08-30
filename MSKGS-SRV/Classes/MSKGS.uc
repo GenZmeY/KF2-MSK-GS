@@ -413,6 +413,7 @@ public function MSKGS_RepInfo CreateRepInfo(Controller C)
 		Self,
 		GroupID,
 		CfgXPBoost.default.CheckGroupTimer,
+		CfgXPBoost.default.MaxRetries,
 		C.PlayerReplicationInfo.UniqueId == OwnerID);
 		
 	RepInfos.AddItem(RepInfo);

@@ -16,6 +16,7 @@ var public  config String HexColorPlayer;
 var public  config String HexColorLeave;
 
 var public  config int    CheckGroupTimer;
+var public  config int    MaxRetries;
 
 public static function InitConfig(int Version, int LatestVersion, E_LogLevel LogLevel)
 {
@@ -72,7 +73,13 @@ public static function Load(E_LogLevel LogLevel)
 	if (default.CheckGroupTimer < 0)
 	{
 		`Log_Error("CheckGroupTimer" @ "(" $ default.CheckGroupTimer $ ")" @ "must be equal or greater than 0");
-		default.CheckGroupTimer = 0;
+		default.CheckGroupTimer = 1;
+	}
+	
+	if (default.MaxRetries < 0)
+	{
+		`Log_Error("MaxRetries" @ "(" $ default.MaxRetries $ ")" @ "must be equal or greater than 0");
+		default.MaxRetries = 60;
 	}
 	
 	if (!IsValidHexColor(default.HexColorOwner, LogLevel))
@@ -112,13 +119,14 @@ private static function ApplyDefault(E_LogLevel LogLevel)
 	default.BoostGroup  = 10;
 	default.BoostPlayer = 0;
 	
-	default.HexColorOwner  = "00FF00";
-	default.HexColorAdmin  = "00FF00";
+	default.HexColorOwner  = "0099FF";
+	default.HexColorAdmin  = "FF0000";
 	default.HexColorGroup  = "00FF00";
 	default.HexColorPlayer = "FFFFFF";
-	default.HexColorLeave  = "FF0000";
+	default.HexColorLeave  = "FFFF00";
 	
-	default.CheckGroupTimer = 0;
+	default.CheckGroupTimer = 2;
+	default.MaxRetries = 60;
 }
 
 private static function bool IsValidHexColor(String HexColor, E_LogLevel LogLevel)

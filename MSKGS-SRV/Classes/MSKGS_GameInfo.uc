@@ -5,11 +5,11 @@ const CfgXPBoost = class'CfgXPBoost';
 const CfgSrvRank = class'CfgSrvRank';
 
 public static function UpdateGameSettings(
-KFGameInfo_Survival KFGI,
-String GameModeClass,
-IMSKGS MSKGS,
-bool bCustomGame,
-bool bUsesStats)
+	KFGameInfo_Survival KFGI,
+	String GameModeClass,
+	IMSKGS MSKGS,
+	bool bCustomGame,
+	bool bUsesStats)
 {
 	local name SessionName;
 	local KFOnlineGameSettings KFGameSettings;
@@ -74,17 +74,21 @@ bool bUsesStats)
 					KFGameSettings.NumWaves = KFGI.WaveMax - 1;
 				}
 				
-				if (MSKGS == None || !MSKGS.GetXPNotifications() || MSKGS.GetXPBoost() <= 0)
+				if (KFGI.RequiresPassword() && CfgSrvRank.default.PasswdText != "")
+				{
+					KFGameSettings.OwningPlayerName = class'GameReplicationInfo'.default.ServerName @ "|" @ CfgSrvRank.default.PasswdText;
+				}
+				else if (MSKGS == None || !MSKGS.GetXPNotifications() || MSKGS.GetXPBoost() <= 0)
 				{
 					KFGameSettings.OwningPlayerName = class'GameReplicationInfo'.default.ServerName;
 				}
 				else if (MSKGS.GetXPBoost() >= CfgXPBoost.default.MaxBoost)
 				{
-					KFGameSettings.OwningPlayerName = class'GameReplicationInfo'.default.ServerName $ " | +" $ CfgXPBoost.default.MaxBoost $ "% XP";
+					KFGameSettings.OwningPlayerName = class'GameReplicationInfo'.default.ServerName @ "| +" $ CfgXPBoost.default.MaxBoost $ "% XP";
 				}
 				else
 				{
-					KFGameSettings.OwningPlayerName = class'GameReplicationInfo'.default.ServerName $ " | +" $ MSKGS.GetXPBoost() $ "% XP";
+					KFGameSettings.OwningPlayerName = class'GameReplicationInfo'.default.ServerName @ "| +" $ MSKGS.GetXPBoost() $ "% XP";
 				}
 
 				KFGameSettings.NumPublicConnections = KFGI.MaxPlayersAllowed;
