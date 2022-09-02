@@ -1,6 +1,6 @@
 class KFPawn_ZedFleshpoundKing extends KFPawn_ZedFleshpoundKing;
 
-DefaultProperties
+defaultproperties
 {
     XPValues(0)=1291
     XPValues(1)=1694

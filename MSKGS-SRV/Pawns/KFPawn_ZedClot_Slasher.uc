@@ -1,6 +1,6 @@
 class KFPawn_ZedClot_Slasher extends KFPawn_ZedClot_Slasher;
 
-DefaultProperties
+defaultproperties
 {
 	XPValues(0)=8
 	XPValues(1)=11

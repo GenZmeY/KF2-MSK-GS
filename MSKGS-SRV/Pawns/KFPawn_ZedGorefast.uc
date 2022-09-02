@@ -1,6 +1,6 @@
 class KFPawn_ZedGorefast extends KFPawn_ZedGorefast;
 
-DefaultProperties
+defaultproperties
 {
 	XPValues(0)=11
 	XPValues(1)=14

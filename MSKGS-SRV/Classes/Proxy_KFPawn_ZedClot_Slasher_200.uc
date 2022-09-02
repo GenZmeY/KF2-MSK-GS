@@ -1,6 +1,6 @@
 class Proxy_KFPawn_ZedClot_Slasher_200 extends KFPawn_ZedClot_Slasher;
 
-DefaultProperties
+defaultproperties
 {
 	XPValues(0)=24 // 8
 	XPValues(1)=33 // 11

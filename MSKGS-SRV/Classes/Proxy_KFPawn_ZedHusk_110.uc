@@ -1,6 +1,6 @@
 class Proxy_KFPawn_ZedHusk_110 extends KFPawn_ZedHusk;
 
-DefaultProperties
+defaultproperties
 {
 	XPValues(0)=32 // 15
 	XPValues(1)=42 // 20

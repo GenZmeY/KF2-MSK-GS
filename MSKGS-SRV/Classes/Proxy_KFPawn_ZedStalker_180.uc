@@ -1,6 +1,6 @@
 class Proxy_KFPawn_ZedStalker_180 extends KFPawn_ZedStalker;
 
-DefaultProperties
+defaultproperties
 {
 	XPValues(0)=22 // 8
 	XPValues(1)=28 // 10

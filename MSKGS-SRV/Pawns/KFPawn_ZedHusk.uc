@@ -1,6 +1,6 @@
 class KFPawn_ZedHusk extends KFPawn_ZedHusk;
 
-DefaultProperties
+defaultproperties
 {
 	XPValues(0)=15
 	XPValues(1)=20

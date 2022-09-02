@@ -1,6 +1,6 @@
 class KFPawn_ZedHans extends KFPawn_ZedHans;
 
-DefaultProperties
+defaultproperties
 {
 	XPValues(0)=1291
 	XPValues(1)=1694

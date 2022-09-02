@@ -1,6 +1,6 @@
 class Proxy_KFPawn_ZedFleshpoundKing_110 extends KFPawn_ZedFleshpoundKing;
 
-DefaultProperties
+defaultproperties
 {
     XPValues(0)=2711 // 1291
     XPValues(1)=3557 // 1694

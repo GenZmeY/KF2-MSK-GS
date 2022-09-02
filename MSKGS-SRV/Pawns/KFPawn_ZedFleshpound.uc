@@ -1,6 +1,6 @@
 class KFPawn_ZedFleshpound extends KFPawn_ZedFleshpound;
 
-DefaultProperties
+defaultproperties
 {
 	XPValues(0)=35
 	XPValues(1)=47

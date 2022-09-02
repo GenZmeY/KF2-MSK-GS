@@ -1,6 +1,6 @@
 class Proxy_KFPawn_ZedClot_Alpha_160 extends KFPawn_ZedClot;
 
-DefaultProperties
+defaultproperties
 {
 	XPValues(0)=21 // 8
 	XPValues(1)=29 // 11

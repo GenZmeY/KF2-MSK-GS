@@ -1,6 +1,6 @@
 class KFPawn_ZedStalker extends KFPawn_ZedStalker;
 
-DefaultProperties
+defaultproperties
 {
 	XPValues(0)=8
 	XPValues(1)=10

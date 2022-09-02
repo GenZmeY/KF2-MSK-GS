@@ -34,7 +34,6 @@ public static function UpdateGameSettings(
 			if (KFGI.PlayfabInter != None && KFGI.PlayfabInter.GetGameSettings() != None)
 			{
 				KFGameSettings = KFOnlineGameSettings(KFGI.PlayfabInter.GetGameSettings());
-				KFGameSettings.bAvailableForTakeover = KFEngine.bAvailableForTakeover;
 			}
 			else
 			{
@@ -45,6 +44,7 @@ public static function UpdateGameSettings(
 			{
 				KFGameSettings.Mode = KFGI.default.GameModes.Find('ClassNameAndPath', GameModeClass);
 				KFGameSettings.Difficulty = KFGI.GameDifficulty;
+				KFGameSettings.bAvailableForTakeover = KFEngine.bAvailableForTakeover;
 
 				if (KFGI.WaveNum == 0)
 				{
@@ -90,7 +90,6 @@ public static function UpdateGameSettings(
 				{
 					KFGameSettings.OwningPlayerName = class'GameReplicationInfo'.default.ServerName @ "| +" $ MSKGS.GetXPBoost() $ "% XP";
 				}
-
 				KFGameSettings.NumPublicConnections = KFGI.MaxPlayersAllowed;
 				KFGameSettings.bRequiresPassword    = KFGI.RequiresPassword();
 				KFGameSettings.NumSpectators        = KFGI.NumSpectators;
@@ -101,8 +100,10 @@ public static function UpdateGameSettings(
 				}
 				else
 				{
-					KFGameSettings.bCustom          = CfgSrvRank.default.bCustom;
-					KFGameSettings.bUsesStats       = CfgSrvRank.default.bUsesStats;
+					KFGameSettings.bCustom             = CfgSrvRank.default.bCustom;
+					KFGameSettings.bUsesStats          = CfgSrvRank.default.bUsesStats;
+					KFGameSettings.bAntiCheatProtected = CfgSrvRank.default.bAntiCheat;
+					KFGameSettings.bServerExiled       = CfgSrvRank.default.bServerExiled;
 				}
 				
 				if (KFGI.WorldInfo.IsConsoleDedicatedServer() || KFGI.WorldInfo.IsEOSDedicatedServer())

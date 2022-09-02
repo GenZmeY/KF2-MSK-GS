@@ -1,6 +1,6 @@
 class KFPawn_ZedBloat extends KFPawn_ZedBloat;
 
-DefaultProperties
+defaultproperties
 {
 	XPValues(0)=17
 	XPValues(1)=22

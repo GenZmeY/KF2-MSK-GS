@@ -1,6 +1,6 @@
 class Proxy_KFPawn_ZedGorefast_180 extends KFPawn_ZedGorefast;
 
-DefaultProperties
+defaultproperties
 {
 	XPValues(0)=31 // 11
 	XPValues(1)=39 // 14

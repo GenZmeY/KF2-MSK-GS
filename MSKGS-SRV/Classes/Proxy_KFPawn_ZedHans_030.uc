@@ -1,6 +1,6 @@
 class Proxy_KFPawn_ZedHans_030 extends KFPawn_ZedHans;
 
-DefaultProperties
+defaultproperties
 {
 	XPValues(0)=1678 // 1291
 	XPValues(1)=2202 // 1694

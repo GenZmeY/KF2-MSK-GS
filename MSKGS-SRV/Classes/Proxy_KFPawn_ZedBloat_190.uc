@@ -1,6 +1,6 @@
 class Proxy_KFPawn_ZedBloat_190 extends KFPawn_ZedBloat;
 
-DefaultProperties
+defaultproperties
 {
 	XPValues(0)=49 // 17
 	XPValues(1)=64 // 22
