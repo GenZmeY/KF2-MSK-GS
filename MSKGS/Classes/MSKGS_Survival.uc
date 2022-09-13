@@ -23,7 +23,7 @@ public function UpdateGameSettings()
 	}
 }
 
-protected function DistributeMoneyAndXP(class<KFPawn_Monster> MonsterClass, const out array<DamageInfo> DamageHistory, Controller Killer)
+protected function DistributeMoneyAndXP(class<KFPawn_Monster> MonsterClass, const out Array<DamageInfo> DamageHistory, Controller Killer)
 {
 	`Log_Trace();
 	

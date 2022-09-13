@@ -72,7 +72,7 @@ private static function bool IsUID(String ID, E_LogLevel LogLevel)
 {
 	`Log_TraceStatic();
 	
-	return (Left(ID, 2) == "0x");
+	return (Left(ID, 2) ~= "0x");
 }
 
 private static function bool AnyToUID(OnlineSubsystem OS, String ID, out UniqueNetId UID, E_LogLevel LogLevel)

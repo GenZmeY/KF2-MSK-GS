@@ -242,13 +242,17 @@ public reliable client function WriteToChat(String Message, String HexColor)
 	
 	if (GetKFPC() == None) return;
 	
-	if (KFPC.MyGFxManager.PartyWidget != None && KFPC.MyGFxManager.PartyWidget.PartyChatWidget != None)
+	if (KFPC.MyGFxManager != None &&
+		KFPC.MyGFxManager.PartyWidget != None &&
+		KFPC.MyGFxManager.PartyWidget.PartyChatWidget != None)
 	{
 		KFPC.MyGFxManager.PartyWidget.PartyChatWidget.AddChatMessage(Message, HexColor);
 	}
 
 	HUD = KFGFxHudWrapper(KFPC.myHUD);
-	if (HUD != None && HUD.HUDMovie != None && HUD.HUDMovie.HudChatBox != None)
+	if (HUD != None &&
+		HUD.HUDMovie != None &&
+		HUD.HUDMovie.HudChatBox != None)
 	{
 		HUD.HUDMovie.HudChatBox.AddChatMessage(Message, HexColor);
 	}
