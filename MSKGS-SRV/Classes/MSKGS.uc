@@ -5,7 +5,6 @@ class MSKGS extends Info
 const LatestVersion = 1;
 
 const CfgCredits      = class'CfgCredits';
-const CfgLifespan     = class'CfgLifespan';
 const CfgSpawnManager = class'CfgSpawnManager';
 const CfgXPBoost      = class'CfgXPBoost';
 const CfgSrvRank      = class'CfgSrvRank';
@@ -90,7 +89,6 @@ private function PreInit()
 	}
 	
 	CfgCredits.static.InitConfig(Version, LatestVersion, LogLevel);
-	CfgLifespan.static.InitConfig(Version, LatestVersion, LogLevel);
 	CfgSpawnManager.static.InitConfig(Version, LatestVersion, LogLevel);
 	CfgXPBoost.static.InitConfig(Version, LatestVersion, LogLevel);
 	CfgSrvRank.static.InitConfig(Version, LatestVersion, LogLevel);
@@ -132,7 +130,6 @@ private function PreInit()
 	`Log_Base("LogLevel:" @ LogLevel);
 	
 	CfgCredits.static.Load(LogLevel);
-	CfgLifespan.static.Load(LogLevel);
 	CfgSpawnManager.static.Load(LogLevel);
 	CfgXPBoost.static.Load(LogLevel);
 	CfgSrvRank.static.Load(LogLevel);
@@ -290,26 +287,6 @@ public function bool GetXPNotifications()
 public function E_LogLevel GetLogLevel()
 {
 	return LogLevel;
-}
-
-public function ModifyLifespan(Actor A)
-{
-	`Log_Trace();
-	
-	if (KFDroppedPickup_Cash(A) != None)
-	{
-		if (CfgLifespan.default.Dosh != 0)
-		{
-			A.Lifespan = float(CfgLifespan.default.Dosh);
-		}
-	}
-	else if (KFDroppedPickup(A) != None)
-	{
-		if (CfgLifespan.default.Weap != 0)
-		{
-			A.Lifespan = float(CfgLifespan.default.Weap);
-		}
-	}
 }
 
 public function SetMaxPlayers(int MaxPlayers)

@@ -1,5 +1,4 @@
-class MSKGS_Mut extends KFMutator
-	config(MSKGS);
+class MSKGS_Mut extends KFMutator;
 
 var private MSKGS MSKGS;
 
@@ -46,19 +45,6 @@ public function AddMutator(Mutator Mut)
 		Mut.Destroy();
 	else
 		Super.AddMutator(Mut);
-}
-
-public function bool CheckRelevance(Actor A)
-{
-	local bool Relevance;
-
-	Relevance = Super.CheckRelevance(A);
-	if (Relevance)
-	{
-		MSKGS.ModifyLifespan(A);
-	}
-
-	return Relevance;
 }
 
 public function NotifyLogin(Controller C)
