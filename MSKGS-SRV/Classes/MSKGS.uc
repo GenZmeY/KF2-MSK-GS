@@ -158,8 +158,6 @@ private function PostInit()
 		return;
 	}
 	
-	WorldInfo.Game.PlayerControllerClass = class'MSKGS_PlayerController';
-	
 	KFGI = KFGameInfo(WorldInfo.Game);
 	if (KFGI == None)
 	{
@@ -177,6 +175,7 @@ private function PostInit()
 	XPNotifications = false;
 	if (MSKGS_Endless(KFGI) != None)
 	{
+		WorldInfo.Game.PlayerControllerClass = class'MSKGS_PlayerController';
 		XPNotifications = true;
 		MSKGS_Endless(KFGI).MSKGS    = Self;
 		MSKGS_Endless(KFGI).GI       = new MSKGS_GameInfo;
@@ -184,6 +183,7 @@ private function PostInit()
 	}
 	else if (MSKGS_Objective(KFGI) != None)
 	{
+		WorldInfo.Game.PlayerControllerClass = class'MSKGS_PlayerController';
 		XPNotifications = true;
 		MSKGS_Objective(KFGI).MSKGS    = Self;
 		MSKGS_Objective(KFGI).GI       = new MSKGS_GameInfo;
@@ -191,6 +191,7 @@ private function PostInit()
 	}
 	else if (MSKGS_Survival(KFGI) != None)
 	{
+		WorldInfo.Game.PlayerControllerClass = class'MSKGS_PlayerController';
 		XPNotifications = true;
 		MSKGS_Survival(KFGI).MSKGS    = Self;
 		MSKGS_Survival(KFGI).GI       = new MSKGS_GameInfo;
