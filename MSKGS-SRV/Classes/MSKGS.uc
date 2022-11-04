@@ -224,7 +224,10 @@ private function PostInit()
 		return;
 	}
 	
-	KFGRI.PerksAvailableData = CfgPerks.static.Load(LogLevel);
+	if (KFGameInfo_WeeklySurvival(KFGI) == None)
+	{
+		KFGRI.PerksAvailableData = CfgPerks.static.Load(LogLevel);
+	}
 	
 	ModifySpawnManager();
 	
