@@ -24,7 +24,7 @@ function PerkChanged(byte NewPerkIndex, bool bClickedIndex)
 		LastPerkIndex = NewPerkIndex;
 		bModifiedPerk = true;
 
-		if (MSKGSPC.Pawn == None || !MSKGSPC.Pawn.IsAliveAndWell())
+		if (MSKGSPC.Pawn == None || !MSKGSPC.Pawn.IsAliveAndWell() || KFGRI.bTraderIsOpen)
 		{
 			SavePerkData();
 			SelectionContainer.SavePerk( NewPerkIndex );
