@@ -3,6 +3,11 @@
 [![Steam Workshop](https://img.shields.io/static/v1?message=workshop&logo=steam&labelColor=gray&color=blue&logoColor=white&label=steam%20)](https://steamcommunity.com/sharedfiles/filedetails/?id=2850677094)
 [![GitHub](https://img.shields.io/github/license/GenZmeY/KF2-MSK-GS)](LICENSE)
 
+# Description
+Mutator providing some functions of [MSK-GS](https://steamcommunity.com/groups/msk-gs) servers.  
+Contains implementations of my ideas and/or combinations of other mutators for compatibility.  
+Publishing due to [the closure of the MSK-GS project](https://steamcommunity.com/groups/msk-gs/announcements/detail/3645134002744389126).  
+
 ***
 
 **Note:** If you want to build/test/brew/publish a mutator without git-bash and/or scripts, follow [these instructions](https://tripwireinteractive.atlassian.net/wiki/spaces/KF2SW/pages/26247172/KF2+Code+Modding+How-to) instead of what is described here.
@@ -22,6 +27,9 @@
 To your kf2 server folder: `/KFGame/BrewedPC/`  
 7. Upload client-side files to steam workshop:
 `./tools/builder -u`  
+
+# Usage
+See `KFMSKGS.ini` and `KFRPL.ini` configs  
 
 # License
 [GNU GPLv3](LICENSE)
