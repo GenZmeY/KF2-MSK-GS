@@ -2,6 +2,5 @@ Mutator providing some functions of [url=https://steamcommunity.com/groups/msk-g
 
 Contains implementations of my ideas and/or combinations of other mutators for compatibility.
 
-Not intended for use with other servers and will never be made available to the public, so don't ask me how to use it.
-
-If you are interested in some feature from this mutator, you can subscribe to [url=https://steamcommunity.com/id/GenZmeY/myworkshopfiles/]me in the steam workshop[/url] and follow my work. I try to post everything I do to the public. I think someday I will be able to put everything into separate mutators and abandon this hodgepodge.
+the [url=https://steamcommunity.com/groups/msk-gs/announcements/detail/3645134002744389126]MSK-GS project is closed[/url], so it's now open source:
+https://github.com/GenZmeY/KF2-MSK-GS [b](GNU GPLv3)[/b]
