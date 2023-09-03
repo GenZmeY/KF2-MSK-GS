@@ -22,10 +22,8 @@ Publishing due to [the closure of the MSK-GS project](https://steamcommunity.com
 `git submodule init && git submodule update`  
 5. Compile:  
 `./tools/builder -cb`  
-6. Copy server-side file:  
-`C:\Users\<USERNAME>\Documents\My Games\KillingFloor2\KFGame\Unpublished\BrewedPC\Script\MSKGS-SRV.u`  
 To your kf2 server folder: `/KFGame/BrewedPC/`  
-7. Upload client-side files to steam workshop:
+6. Upload to steam workshop:
 `./tools/builder -u`  
 
 # Usage
