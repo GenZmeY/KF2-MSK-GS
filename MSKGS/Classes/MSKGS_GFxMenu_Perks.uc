@@ -32,6 +32,8 @@ function PerkChanged(byte NewPerkIndex, bool bClickedIndex)
 		}
 	}
 	
+	PreviewPerkIndex = NewPerkIndex; 
+	
 	UpdateContainers(MSKGSPC.PerkList[NewPerkIndex].PerkClass, bClickedIndex);
 }
 
