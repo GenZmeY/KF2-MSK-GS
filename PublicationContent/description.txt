@@ -3,7 +3,7 @@ Mutator providing some functions of [url=https://steamcommunity.com/groups/msk-g
 Contains implementations of my ideas and/or combinations of other mutators for compatibility.
 
 [b]Translators:[/b]
-[url=https://steamcommunity.com/profiles/76561199126205919]cheungfatzong[/url] - Traditional Chinese [CHT], Simplified Chinese [CHN].
+[url=https://steamcommunity.com/profiles/76561199126205919]cheungfatzong[/url] - Traditional [CHT] and Simplified [CHN] Chinese.
 
 the [url=https://steamcommunity.com/groups/msk-gs/announcements/detail/3645134002744389126]MSK-GS project is closed[/url], so it's now open source:
 https://github.com/GenZmeY/KF2-MSK-GS [b](GNU GPLv3)[/b]
