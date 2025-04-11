@@ -1,9 +1,32 @@
+[h1]📋 Description[/h1]
 Mutator providing some functions of [url=https://steamcommunity.com/groups/msk-gs]MSK-GS[/url] servers.
-
 Contains implementations of my ideas and/or combinations of other mutators for compatibility.
 
-[b]Translators:[/b]
-[url=https://steamcommunity.com/profiles/76561199126205919]cheungfatzong[/url] - Traditional [CHT] and Simplified [CHN] Chinese.
+The [url=https://steamcommunity.com/groups/msk-gs/announcements/detail/3645134002744389126]MSK-GS project is closed[/url], so it's now open source.
+I am posting this in the hope that this code will be useful to someone.
 
-the [url=https://steamcommunity.com/groups/msk-gs/announcements/detail/3645134002744389126]MSK-GS project is closed[/url], so it's now open source:
+[h1]❌ Whitelisted?[/h1]
+No. This mod is not whitelisted and will de-rank your server. Any XP earned will not be saved.
+
+[h1]⚙️ Usage & Setup[/h1]
+I never planned to make this mod public, so I don't have any instructions for you. You'll have to figure it out on your own. Study [url=https://github.com/GenZmeY/KF2-MSK-GS]the mutator code[/url], look at [url=https://github.com/GenZmeY/KF2-MSK-GS-Resources]my configs[/url] - I'm sure you'll succeed.
+
+[b]If you are not ready to figure it out on your own, refrain from using this mutator.[/b]
+
+[h1]🌍 Credits[/h1]
+[b]Translators:[/b]
+[list]
+[*][url=https://steamcommunity.com/profiles/76561199126205919]cheungfatzong[/url] - Traditional [CHT] and Simplified [CHN] Chinese.
+[/list]
+[b]Other credits:[/b]
+[list]
+[*]The cat on the cover is Meawbin (original character by [url=https://x.com/horrormove]Cotton Valent[/url]).
+[/list]
+
+[h1]⚠️ Status[/h1]
+⛔️ Development has stopped: I no longer have the time or motivation to maintain this mod. No further updates or bug fixes are planned.
+❕ Since this mod was discontinued, several KF2 updates have been released, so some things may not work - use at your own risk.
+❗️ I will not provide any support for this mod.
+
+[h1]📜 Sources[/h1]
 https://github.com/GenZmeY/KF2-MSK-GS [b](GNU GPLv3)[/b]
